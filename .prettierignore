@@ -1,0 +1,9 @@
+bun.lock
+dist
+node_modules
+.astro
+docs/spec.md
+artifacts
+.playwright-cli
+test-results
+playwright-report

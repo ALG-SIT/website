@@ -1,0 +1,294 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import { navigation, site } from '../data/site';
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  article?: Record<string, unknown>;
+}
+const {
+  title,
+  description = site.description,
+  image = '/og.png',
+  noindex = false,
+  article,
+} = Astro.props;
+const canonical = new URL(
+  noindex && Astro.url.pathname === '/404/' ? '/404.html' : Astro.url.pathname,
+  site.url,
+).href;
+const pageTitle = title
+  ? `${title} | ${site.name}`
+  : `${site.name} — 好奇心を、動かそう。`;
+const isPreview =
+  site.preview ||
+  (import.meta.env.CF_PAGES_BRANCH &&
+    import.meta.env.CF_PAGES_BRANCH !== 'main');
+const structured = article ?? {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  alternateName: site.shortName,
+  url: site.url,
+  logo: new URL('/favicon.svg', site.url).href,
+  ...(site.github
+    ? { sameAs: [site.github, ...site.social.map((s) => s.url)] }
+    : {}),
+};
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="preload"
+      href="/fonts/alg-jp-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="/fonts/alg-jp-700.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <style is:inline>
+      @font-face {
+        font-family: 'ALG Sans';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('/fonts/alg-jp-400.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'ALG Sans';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url('/fonts/alg-jp-700.woff2') format('woff2');
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {(noindex || isPreview) && (
+      <meta name="robots" content="noindex, nofollow" />
+    )}
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, site.url).href} />
+    <meta property="og:locale" content="ja_JP" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, site.url).href} />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0b1113" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="ALGの記事"
+      href="/rss.xml"
+    />
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('alg-theme');
+          document.documentElement.dataset.theme =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+        } catch {
+          document.documentElement.dataset.theme = matchMedia(
+            '(prefers-color-scheme: dark)',
+          ).matches
+            ? 'dark'
+            : 'light';
+        }
+      })();
+    </script>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(structured).replace(/</g, '\\u003c')}
+    />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">
+      本文へ移動
+    </a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="/" class="brand" aria-label="ALG Ai Love GPU ホーム">
+          <span class="brand-symbol">
+            <Icon name="chip" size={25} />
+          </span>
+          <span>
+            ALG<span class="brand-name">Ai Love GPU</span>
+          </span>
+        </a>
+        <nav class="desktop-nav" aria-label="メインナビゲーション">
+          {navigation.map((item) => (
+            <a
+              href={item.href}
+              aria-current={
+                Astro.url.pathname.startsWith(item.href) ? 'page' : undefined
+              }
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+        <div class="header-actions">
+          <button
+            class="icon-button search-trigger"
+            aria-label="サイト内を検索"
+            data-search-open
+          >
+            <Icon name="search" />
+          </button>
+          <button
+            class="icon-button"
+            id="theme-toggle"
+            aria-label="テーマを切り替え"
+          >
+            <Icon name="sun" />
+          </button>
+          <a href="/join/" class="header-join">
+            参加する <Icon name="arrow" size={16} />
+          </a>
+          <button
+            class="icon-button mobile-toggle"
+            id="menu-toggle"
+            aria-label="メニューを開く"
+            aria-expanded="false"
+            aria-controls="mobile-nav"
+          >
+            <Icon name="menu" />
+          </button>
+        </div>
+      </div>
+      <nav
+        id="mobile-nav"
+        class="mobile-nav container"
+        aria-label="モバイルナビゲーション"
+      >
+        {navigation.map((item) => (
+          <a
+            href={item.href}
+            aria-current={
+              Astro.url.pathname.startsWith(item.href) ? 'page' : undefined
+            }
+          >
+            {item.label}
+          </a>
+        ))}
+        <a href="/contact/">連絡先</a>
+      </nav>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-top">
+          <div>
+            <a href="/" class="brand">
+              <span class="brand-symbol">
+                <Icon name="chip" size={25} />
+              </span>
+              <span>
+                ALG<span class="brand-name">Ai Love GPU</span>
+              </span>
+            </a>
+            <p>
+              好奇心を、動かそう。
+              <br />
+              AIを学び、GPUで試し、仲間とつくる。
+            </p>
+          </div>
+          <div class="footer-links">
+            <div>
+              <span>EXPLORE</span>
+              {navigation.map((item) => (
+                <a href={item.href}>{item.label}</a>
+              ))}
+            </div>
+            <div>
+              <span>CONNECT</span>
+              <a href="/contact/">連絡先・SNS</a>
+              {site.github && <a href={site.github}>GitHub ↗</a>}
+              <a href="/rss.xml">RSSフィード ↗</a>
+              <a href="/privacy/">プライバシーポリシー</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© {new Date().getFullYear()} Ai Love GPU</span>
+          <span>
+            BUILT WITH CURIOSITY <span class="footer-plus">+</span> ASTRO
+          </span>
+        </div>
+        {site.preview && (
+          <p class="preview-note">
+            このサイトは開発プレビューです。記事・活動内容にはサンプルが含まれます。
+          </p>
+        )}
+      </div>
+    </footer>
+    <dialog id="search-dialog" aria-labelledby="search-title">
+      <div class="search-heading">
+        <h2 id="search-title">記事・プロジェクトを検索</h2>
+        <button class="icon-button" data-search-close aria-label="検索を閉じる">
+          <Icon name="close" />
+        </button>
+      </div>
+      <label for="search-input" class="sr-only">
+        検索キーワード
+      </label>
+      <div class="search-field">
+        <Icon name="search" />
+        <input
+          id="search-input"
+          type="search"
+          placeholder="例：機械学習、GPU、Python"
+          autocomplete="off"
+        />
+      </div>
+      <p id="search-status" role="status" aria-live="polite">
+        キーワードを入力してください。
+      </p>
+      <ul id="search-results"></ul>
+      <p class="search-hint">ESCで閉じる · 公開記事とプロジェクトを検索</p>
+    </dialog>
+    <script>
+      import '../lib/browser';
+    </script>
+    <noscript>
+      <style>
+        .header-actions button {
+          display: none;
+        }
+        .mobile-nav {
+          display: flex;
+          flex-wrap: wrap;
+        }
+        .filter-controls {
+          display: none;
+        }
+      </style>
+    </noscript>
+  </body>
+</html>

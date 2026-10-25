@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Icon from './Icon.astro';
+import { statuses } from '../data/tags';
+interface Props {
+  project: CollectionEntry<'projects'>;
+  index?: number;
+}
+const { project, index = 0 } = Astro.props;
+---
+
+<article class="project-card">
+  <a
+    href={`/projects/${project.id}/`}
+    class="project-visual"
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    {project.data.cover ? (
+      <Image
+        src={project.data.cover}
+        alt=""
+        width={800}
+        height={400}
+        loading="lazy"
+      />
+    ) : (
+      <>
+        <span class="visual-index">
+          PROJECT / {String(index + 1).padStart(2, '0')}
+        </span>
+        <div class="terminal-art">
+          <span>
+            <i></i>
+            <i></i>
+            <i></i>
+          </span>
+          <code>
+            <b>❯</b> curiosity.init()
+            <br />
+            <span class="terminal-muted">&nbsp; loading possibilities...</span>
+            <br />
+            <b>❯</b> let's build something<span class="terminal-cursor">_</span>
+          </code>
+        </div>
+      </>
+    )}
+  </a>
+  <div class="card-body">
+    <div class="project-status">
+      <span class="status-dot"></span>
+      {statuses[project.data.status]}
+    </div>
+    <h3>
+      <a href={`/projects/${project.id}/`}>
+        {project.data.title}
+        <Icon name="arrow" size={20} />
+      </a>
+    </h3>
+    <p>{project.data.description}</p>
+    <div class="tech-list">
+      {project.data.technologies.map((tech) => (
+        <span>{tech}</span>
+      ))}
+    </div>
+  </div>
+</article>

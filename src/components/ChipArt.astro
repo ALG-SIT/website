@@ -1,0 +1,129 @@
+---
+const pins = Array.from({ length: 12 }, (_, i) => 119 + i * 15);
+---
+
+<div class="chip-art" aria-hidden="true">
+  <div class="chip-coordinate coordinate-top">ARCHITECTURE / ALG_01</div>
+  <svg viewBox="0 0 420 420" fill="none">
+    <defs>
+      <linearGradient
+        id="chip-gradient"
+        x1="80"
+        y1="80"
+        x2="340"
+        y2="340"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stop-color="#7fffe1" />
+        <stop offset="1" stop-color="#38a5bb" />
+      </linearGradient>
+      <pattern
+        id="chip-grid"
+        width="20"
+        height="20"
+        patternUnits="userSpaceOnUse"
+      >
+        <path
+          d="M20 0H0V20"
+          stroke="currentColor"
+          stroke-opacity=".13"
+          stroke-width=".7"
+        />
+      </pattern>
+    </defs>
+    <rect x="10" y="10" width="400" height="400" fill="url(#chip-grid)" />
+    <g stroke="currentColor" stroke-opacity=".3">
+      <path d="M0 140h49l25 25h24M0 265h55l25-25h18M420 145h-50l-30 30h-18M420 280h-60l-24-24h-14M140 0v55l25 25v18M265 0v52l-25 25v21M140 420v-51l25-25v-22M280 420v-51l-25-25v-22" />
+      <circle cx="49" cy="140" r="4" />
+      <circle cx="55" cy="265" r="4" />
+      <circle cx="370" cy="145" r="4" />
+      <circle cx="360" cy="280" r="4" />
+      <rect
+        x="72"
+        y="72"
+        width="276"
+        height="276"
+        rx="18"
+        stroke-dasharray="3 7"
+      />
+    </g>
+    <g stroke="url(#chip-gradient)" stroke-width="3">
+      {pins.map((p) => (
+        <>
+          <path d={`M${p} 86v19M${p} 315v19M86 ${p}h19M315 ${p}h19`} />
+        </>
+      ))}
+    </g>
+    <rect
+      x="103"
+      y="103"
+      width="214"
+      height="214"
+      rx="12"
+      fill="var(--chip-bg)"
+      stroke="url(#chip-gradient)"
+      stroke-width="1.5"
+    />
+    <rect
+      x="117"
+      y="117"
+      width="186"
+      height="186"
+      rx="5"
+      stroke="currentColor"
+      stroke-opacity=".25"
+    />
+    <g fill="currentColor" opacity=".11">
+      {Array.from({ length: 4 }, (_, y) =>
+        Array.from({ length: 4 }, (_, x) => (
+          <rect
+            x={132 + x * 40}
+            y={132 + y * 40}
+            width="35"
+            height="35"
+            rx="2"
+          />
+        )),
+      )}
+    </g>
+    <rect
+      x="151"
+      y="164"
+      width="118"
+      height="92"
+      rx="3"
+      fill="var(--chip-bg)"
+      stroke="url(#chip-gradient)"
+    />
+    <text
+      x="210"
+      y="220"
+      fill="currentColor"
+      font-size="39"
+      font-weight="700"
+      font-family="monospace"
+      text-anchor="middle"
+      letter-spacing="-3"
+    >
+      ALG
+    </text>
+    <text
+      x="210"
+      y="242"
+      fill="currentColor"
+      opacity=".65"
+      font-size="8"
+      font-family="monospace"
+      text-anchor="middle"
+      letter-spacing="3"
+    >
+      BUILT TO EXPLORE
+    </text>
+    <g stroke="currentColor" stroke-opacity=".5">
+      <path d="M22 40V22h18m340 0h18v18M22 380v18h18m340 0h18v-18" />
+    </g>
+  </svg>
+  <div class="chip-coordinate coordinate-bottom">
+    <span class="status-dot"></span> CURIOSITY IS OUR CORE.
+  </div>
+</div>

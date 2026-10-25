@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeading from '../components/PageHeading.astro';
+---
+
+<Base
+  title="プライバシーポリシー"
+  description="ALG公式サイトにおける個人情報・ブラウザ保存データの取り扱いについて。"
+>
+  <div class="container page-content">
+    <PageHeading
+      eyebrow="PRIVACY POLICY"
+      title="プライバシーポリシー"
+      description="本サイトの情報の取り扱いについて。"
+    />
+    <div class="prose narrow">
+      <h2>運営者・対象</h2>
+      <p>
+        Ai Love
+        GPU（ALG）が運営する公式Webサイト（alg-sit.club）を対象とします。
+      </p>
+      <h2>個人情報の収集</h2>
+      <p>
+        本サイトには会員登録、コメント、問い合わせフォームを設置していません。独自のアクセス解析は導入していません。
+      </p>
+      <h2>配信サービスによる処理</h2>
+      <p>
+        本サイトはCloudflare
+        Pagesで配信します。配信・セキュリティ対策のため、サービス提供者がIPアドレスなどの通信情報を処理する場合があります。詳細は
+        <a href="https://www.cloudflare.com/privacypolicy/">
+          Cloudflareのプライバシーポリシー
+        </a>
+        をご確認ください。
+      </p>
+      <h2>ブラウザへの保存</h2>
+      <p>
+        ライト・ダークモードの手動設定を、お使いのブラウザのローカルストレージ（キー：
+        <code>alg-theme</code>）に保存します。設定はブラウザから削除できます。
+      </p>
+      <p>
+        サイト内検索はブラウザ内で実行します。検索語を外部の検索APIへ送信する仕組みはありません。
+      </p>
+      <h2>プロフィール・写真</h2>
+      <p>
+        部員のプロフィールや活動写真は、本人または関係者の掲載許可を確認して掲載します。削除や訂正のご希望は、
+        <a href="/contact/">公式窓口</a>へお知らせください。
+      </p>
+      <h2>外部リンク</h2>
+      <p>
+        リンク先のサービスでの情報の取り扱いについては、各サービスのポリシーをご確認ください。
+      </p>
+      <h2>変更</h2>
+      <p>機能追加や運用の変更に合わせて本ポリシーを更新します。</p>
+      <p>策定日：2026年10月25日</p>
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,57 @@
+# Ai Love GPU — Official Website
+
+ALGの紹介・技術記事・活動報告・プロジェクトを公開する静的サイトです。仕様は[技術仕様書](docs/spec.md)、実装時の決定は[実装メモ](docs/IMPLEMENTATION.md)を参照してください。
+
+## 開発
+
+Node.js **24.21.0**とBun **1.4.4**を使用します。Windows・Linux・macOSで同じバージョンを用意してください。
+
+```sh
+bun ci
+bun run dev
+```
+
+`http://localhost:4321/`を開きます。初回導入や依存関係の変更には`bun install`を使用し、変更した`bun.lock`をコミットします。
+
+| コマンド                    | 内容                                                                 |
+| --------------------------- | -------------------------------------------------------------------- |
+| `bun run dev`               | ローカル開発。下書き・将来記事も確認可能                             |
+| `bun run build`             | 静的生成、日本語フォント最適化、検索インデックス生成、配信成果物検証 |
+| `bun run preview`           | 本番相当の生成サイトを確認                                           |
+| `bun run check`             | Astro・TypeScriptの型検査                                            |
+| `bun run lint`              | Markdown・コード整形検査                                             |
+| `bun run format`            | 整形                                                                 |
+| `bun run format:check`      | 整形検査                                                             |
+| `bun test`                  | 公開ポリシーの単体テスト                                             |
+| `bun run test:content`      | 一時ディレクトリで不正コンテンツ・下書き除外を統合検証               |
+| `bun run test:e2e`          | ビルド済みサイトのブラウザテスト                                     |
+| `bun run audit:performance` | 代表3ページのモバイルLighthouse測定                                  |
+
+日本語フォントはビルドした公開HTMLの使用文字に合わせて縮小し、サイト内から配信します。外部フォントサービスへの通信はありません。開発時は起動時にフォントを用意するため、新しい文字が表示されない場合は開発サーバーを再起動してください。
+
+検索はビルド成果物を使います。`dev`では検索インデックスが生成されないため、検索の確認には`build`後に`preview`を使用してください。
+
+## 構成
+
+- `src/content/`：Markdown・MDXの記事・プロジェクト
+- `src/data/`：著者、タグ、サイト情報、確認済みの連絡先
+- `src/content.config.ts`：コレクションとスキーマ
+- `src/components/`・`src/layouts/`・`src/styles/`：共通UIとデザイントークン
+- `src/pages/`：静的・動的ルート、RSS、robots.txt
+- `scripts/`・`tests/`：生成物検査とテスト
+- `public/`：favicon、標準OGP画像、Cloudflare配信設定
+
+## 開発プレビューと正式公開
+
+初期状態は`src/data/site.ts`の`preview: true`です。サンプルであることをフッターに表示し、robotsとメタタグでインデックス登録を拒否します。これは閲覧制限ではありません。
+
+正式公開前にサンプルを差し替え、連絡先・紹介文・掲載許可を確認し、`preview: false`にします。Cloudflare本番環境では`SITE_RELEASE=1`を設定してください。不備があればビルドの生成物検証が失敗します。
+
+公式リポジトリは[ALG-SIT/website](https://github.com/ALG-SIT/website)です。Cloudflareプロジェクト、DNS、実在するCODEOWNERSは未設定です。サイト公開・保護ルールの適用には管理担当者によるアカウント設定が必要です。
+
+## 運用文書
+
+- [記事投稿の流れ](CONTRIBUTING.md)
+- [コンテンツガイド](docs/CONTENT_GUIDE.md)
+- [デプロイ手順](docs/DEPLOYMENT.md)
+- [運用・引き継ぎ](docs/OPERATIONS.md)

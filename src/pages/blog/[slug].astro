@@ -1,0 +1,169 @@
+---
+import { render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { publishedBlog, relatedPosts, resolveAuthors } from '../../lib/content';
+import { categories, tags } from '../../data/tags';
+import { formatDate } from '../../lib/publishing';
+import { site } from '../../data/site';
+export async function getStaticPaths() {
+  return (await publishedBlog()).map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const authors = await resolveAuthors(post.data.authors);
+const related = relatedPosts(post, await publishedBlog());
+const toc = headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+const image = post.data.cover?.src;
+const structured = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.publishedAt.toISOString(),
+  ...(post.data.updatedAt
+    ? { dateModified: post.data.updatedAt.toISOString() }
+    : {}),
+  author: authors.map((author) => ({
+    '@type': author.id === 'alg' ? 'Organization' : 'Person',
+    name: author.data.displayName,
+  })),
+  publisher: { '@type': 'Organization', name: site.name, url: site.url },
+  mainEntityOfPage: new URL(`/blog/${post.id}/`, site.url).href,
+  image: new URL(image ?? '/og.png', site.url).href,
+};
+---
+
+<Base
+  title={post.data.title}
+  description={post.data.description}
+  image={image}
+  article={structured}
+>
+  <div class="container page-content">
+    <nav class="breadcrumbs" aria-label="パンくず">
+      <a href="/">ホーム</a>
+      <span>/</span>
+      <a href="/blog/">記事</a>
+      <span>/</span>
+      <span aria-current="page">{categories[post.data.category]}</span>
+    </nav>
+    <article data-pagefind-body>
+      <header class="article-header">
+        <span class="category-label">{categories[post.data.category]}</span>
+        {post.data.draft && (
+          <span class="draft-badge">下書き・ローカル限定</span>
+        )}
+        <h1 data-pagefind-meta="title">{post.data.title}</h1>
+        <p class="article-description">{post.data.description}</p>
+        <div class="article-meta">
+          <span>
+            {authors.map((author) => author.data.displayName).join('・')}
+          </span>
+          <time datetime={post.data.publishedAt.toISOString()}>
+            公開 {formatDate(post.data.publishedAt)}
+          </time>
+          {post.data.updatedAt && (
+            <time datetime={post.data.updatedAt.toISOString()}>
+              更新 {formatDate(post.data.updatedAt)}
+            </time>
+          )}
+        </div>
+        <div class="tag-list article-tags">
+          {post.data.tags.map((id) => (
+            <a href={`/tags/${id}/`}>#{tags[id as keyof typeof tags]}</a>
+          ))}
+        </div>
+        {post.data.cover && (
+          <Image
+            class="article-cover"
+            src={post.data.cover}
+            alt={post.data.coverAlt!}
+            width={1200}
+            loading="eager"
+          />
+        )}
+      </header>
+      <div class="article-layout">
+        <div class="prose">
+          <Content />
+        </div>
+        {toc.length > 0 && (
+          <aside class="toc" data-pagefind-ignore>
+            <nav aria-label="この記事の目次">
+              <p>
+                ON THIS PAGE <span>目次</span>
+              </p>
+              <ol>
+                {toc.map((heading) => (
+                  <li class:list={{ 'toc-sub': heading.depth === 3 }}>
+                    <a href={`#${heading.slug}`}>{heading.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          </aside>
+        )}
+      </div>
+      <section
+        class="authors-section"
+        data-pagefind-ignore
+        aria-label="著者紹介"
+      >
+        {authors.map((author) => (
+          <div class="author-profile">
+            {author.data.avatar ? (
+              <Image
+                class="author-avatar"
+                src={author.data.avatar}
+                alt={`${author.data.displayName}のアバター`}
+                width={56}
+                height={56}
+              />
+            ) : (
+              <span class="author-avatar" aria-hidden="true">
+                {author.data.displayName.slice(0, 1)}
+              </span>
+            )}
+            <div>
+              <strong>{author.data.displayName}</strong>
+              {author.data.bio && <p>{author.data.bio}</p>}
+              <div class="author-links">
+                {author.data.github && (
+                  <a href={author.data.github}>GitHub ↗</a>
+                )}
+                {author.data.website && (
+                  <a href={author.data.website}>Webサイト ↗</a>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+    </article>
+    {related.length > 0 && (
+      <section class="related-section">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">KEEP EXPLORING</p>
+            <h2>こちらもどうぞ。</h2>
+          </div>
+        </div>
+        <div class="post-grid">
+          {related.map((entry, index) => (
+            <PostCard post={entry} index={index} />
+          ))}
+        </div>
+      </section>
+    )}
+    <a class="back-link" href="/blog/">
+      ← 記事一覧に戻る
+    </a>
+  </div>
+</Base>

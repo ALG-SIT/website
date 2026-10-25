@@ -1,0 +1,10 @@
+---
+interface Props {
+  title: string;
+}
+---
+
+<aside class="article-callout">
+  <strong>{Astro.props.title}</strong>
+  <slot />
+</aside>

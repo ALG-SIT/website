@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<Base title="ページが見つかりません" noindex>
+  <div class="container page-content">
+    <p class="error-heading">
+      404<span style="font-size: .5em">_</span>
+    </p>
+    <h1>ここは、まだ未開拓。</h1>
+    <p class="page-description">
+      お探しのページは移動したか、存在しないようです。
+      <br />
+      ホームや記事一覧から、もう一度探してみてください。
+    </p>
+    <div class="hero-buttons">
+      <a href="/" class="button button-primary">
+        ホームに戻る <Icon name="arrow" size={18} />
+      </a>
+      <a href="/blog/" class="button button-secondary">
+        記事を探す
+      </a>
+    </div>
+  </div>
+</Base>

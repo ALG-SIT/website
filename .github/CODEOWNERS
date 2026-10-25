@@ -1,0 +1,8 @@
+# 公開前に実在するチーム名へ置換して、以下の行を有効にしてください。
+# Organizationのチームにはリポジトリのwrite権限が必要です。
+# * @YOUR_ORG/web-maintainers
+# /src/content/ @YOUR_ORG/content-editors
+# /src/data/authors.json @YOUR_ORG/content-editors
+# /src/data/tags.ts @YOUR_ORG/web-maintainers
+# コード変更はweb-maintainersの承認を必須にしてください。
+# 未設定の間、このファイルによるレビュー強制は行われません。

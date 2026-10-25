@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { publishedProjects } from '../../lib/content';
+const projects = await publishedProjects();
+---
+
+<Base
+  title="プロジェクト"
+  description="ALGのプロジェクト紹介。AI・GPU・Webなど、アイデアをかたちにする取り組み。"
+>
+  <div class="container page-content">
+    <PageHeading
+      eyebrow="WHAT WE BUILD"
+      title="アイデアの、その先へ。"
+      description="小さな実験も、大きな挑戦も。つくりながら見つける、新しい可能性。"
+    />
+    <div class="project-grid">
+      {projects.map((project, index) => (
+        <ProjectCard project={project} index={index} />
+      ))}
+      {!projects.length && (
+        <p class="empty-state">プロジェクトの公開を準備しています。</p>
+      )}
+    </div>
+  </div>
+</Base>

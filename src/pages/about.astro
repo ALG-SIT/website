@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeading from '../components/PageHeading.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<Base
+  title="ALGについて"
+  description="Ai Love GPU（ALG）は、AIやGPUをはじめとする技術を学び、試し、共有するサークルです。"
+>
+  <div class="container page-content">
+    <PageHeading
+      eyebrow="ABOUT AI LOVE GPU"
+      title="好奇心で、つながる。"
+      description="AIを学ぶ。GPUで試す。つくって、共有する。Ai Love GPU、略してALGです。"
+    />
+    <div class="prose narrow">
+      <h2 id="our-purpose">私たちが大切にすること</h2>
+      <p>
+        知らない技術に出会ったときの「おもしろそう」を、実際に手を動かすきっかけに。ALGは、AIやGPUをはじめとする技術に関心を持つ仲間が、学びやアイデアを共有するサークルです。
+      </p>
+      <p>
+        完成した成果だけでなく、試行錯誤の過程にも価値があると考えています。実験して、記録して、誰かに伝える。その積み重ねを、このサイトから発信します。
+      </p>
+      <h2 id="activities">取り組むこと</h2>
+      <ul>
+        <li>
+          <strong>学ぶ：</strong>
+          機械学習、GPU、プログラミングなど、関心のある分野を調べる。
+        </li>
+        <li>
+          <strong>つくる：</strong>
+          小さなコードやデモから、アイデアをかたちにする。
+        </li>
+        <li>
+          <strong>共有する：</strong>
+          技術記事や活動報告を通じて、発見や課題をひらく。
+        </li>
+      </ul>
+      <div class="info-panel">
+        <h2>活動情報について</h2>
+        <p>
+          活動日時・場所・参加対象などの正式な案内は準備中です。確定した情報は入部案内に掲載します。
+        </p>
+      </div>
+      <h2 id="open-knowledge">学びを、次の人へ</h2>
+      <p>
+        記事やプロジェクトはGitHubで管理します。部員が書き、レビューし、公開する仕組みを通して、活動の知識を次の担当者へ引き継ぎます。
+      </p>
+    </div>
+    <div class="hero-buttons" style="margin-top: 35px">
+      <a href="/join/" class="button button-primary">
+        入部案内を見る <Icon name="arrow" size={18} />
+      </a>
+      <a href="/projects/" class="button button-secondary">
+        プロジェクトを見る <Icon name="arrow" size={18} />
+      </a>
+    </div>
+  </div>
+</Base>

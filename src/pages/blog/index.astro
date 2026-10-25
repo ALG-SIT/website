@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import PostCard from '../../components/PostCard.astro';
+import Icon from '../../components/Icon.astro';
+import { publishedBlog } from '../../lib/content';
+import { categories } from '../../data/tags';
+const posts = await publishedBlog();
+---
+
+<Base
+  title="記事"
+  description="ALGの技術記事、活動報告、お知らせ。試したこと、学んだことを共有します。"
+>
+  <div class="container page-content">
+    <PageHeading
+      eyebrow="NOTES & STORIES"
+      title="試したこと、学んだこと。"
+      description="技術のこと、日々の活動のこと。ALGの学びと挑戦の記録。"
+    />
+    <div class="listing-toolbar">
+      <div
+        class="filter-controls"
+        role="group"
+        aria-label="カテゴリーで絞り込む"
+      >
+        <button data-filter="all" aria-pressed="true">
+          すべて
+        </button>
+        {Object.entries(categories).map(([id, label]) => (
+          <button data-filter={id} aria-pressed="false">
+            {label}
+          </button>
+        ))}
+      </div>
+      <button class="button button-secondary search-trigger" data-search-open>
+        <Icon name="search" size={17} />
+        記事を検索
+      </button>
+    </div>
+    <p id="filter-count" class="result-count" role="status">
+      {posts.length}件の記事
+    </p>
+    <div class="post-grid">
+      {posts.map((post, index) => (
+        <PostCard post={post} index={index} />
+      ))}
+      {!posts.length && <p class="empty-state">記事を準備しています。</p>}
+    </div>
+  </div>
+</Base>

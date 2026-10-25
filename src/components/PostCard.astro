@@ -1,0 +1,84 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Icon from './Icon.astro';
+import { categories, tags } from '../data/tags';
+import { formatDate } from '../lib/publishing';
+import { resolveAuthors } from '../lib/content';
+interface Props {
+  post: CollectionEntry<'blog'>;
+  index?: number;
+}
+const { post, index = 0 } = Astro.props;
+const authors = await resolveAuthors(post.data.authors);
+---
+
+<article class="post-card" data-category={post.data.category}>
+  <a
+    class:list={['card-visual', `visual-${post.data.category}`]}
+    href={`/blog/${post.id}/`}
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    {post.data.cover ? (
+      <Image
+        src={post.data.cover}
+        alt=""
+        width={720}
+        height={400}
+        loading="lazy"
+      />
+    ) : (
+      <>
+        <span class="visual-index">
+          ALG / NOTES_{String(index + 1).padStart(2, '0')}
+        </span>
+        <Icon
+          name={
+            post.data.category === 'tech'
+              ? 'chip'
+              : post.data.category === 'activity'
+                ? 'people'
+                : 'code'
+          }
+          size={72}
+        />
+        <span class="visual-label">
+          {post.data.category === 'tech'
+            ? 'EXPERIMENT. LEARN. REPEAT.'
+            : post.data.category === 'activity'
+              ? 'BETTER, TOGETHER.'
+              : 'HELLO, NEXT CHAPTER.'}
+        </span>
+      </>
+    )}
+  </a>
+  <div class="card-body">
+    <div class="card-meta">
+      <span class="category-label">{categories[post.data.category]}</span>
+      <time datetime={post.data.publishedAt.toISOString()}>
+        {formatDate(post.data.publishedAt)}
+      </time>
+    </div>
+    <h3>
+      <a href={`/blog/${post.id}/`}>
+        {post.data.title}
+        <span class="card-arrow">
+          <Icon name="arrow" size={18} />
+        </span>
+      </a>
+    </h3>
+    <p>{post.data.description}</p>
+    <div class="card-bottom">
+      <span class="author-mini">
+        <span class="avatar-mini">A</span>
+        {authors.map((author) => author.data.displayName).join('・')}
+      </span>
+      <div class="tag-list">
+        {post.data.tags.slice(0, 2).map((id) => (
+          <a href={`/tags/${id}/`}>#{tags[id as keyof typeof tags]}</a>
+        ))}
+      </div>
+    </div>
+  </div>
+</article>

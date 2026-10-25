@@ -1,0 +1,101 @@
+---
+import { render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { publishedProjects, resolveAuthors } from '../../lib/content';
+import { statuses } from '../../data/tags';
+export async function getStaticPaths() {
+  return (await publishedProjects()).map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+const { project } = Astro.props;
+const { Content, headings } = await render(project);
+const authors = await resolveAuthors(project.data.authors);
+const toc = headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+---
+
+<Base
+  title={project.data.title}
+  description={project.data.description}
+  image={project.data.cover?.src}
+>
+  <div class="container page-content">
+    <nav class="breadcrumbs" aria-label="パンくず">
+      <a href="/">ホーム</a>
+      <span>/</span>
+      <a href="/projects/">プロジェクト</a>
+    </nav>
+    <article data-pagefind-body>
+      <header class="article-header">
+        <p class="eyebrow">PROJECT / {statuses[project.data.status]}</p>
+        {project.data.draft && (
+          <span class="draft-badge">下書き・ローカル限定</span>
+        )}
+        <h1 data-pagefind-meta="title">{project.data.title}</h1>
+        <p class="article-description">{project.data.description}</p>
+        <div class="tech-list">
+          {project.data.technologies.map((tech) => (
+            <span>{tech}</span>
+          ))}
+        </div>
+        <div class="project-links">
+          {project.data.repositoryUrl && (
+            <a
+              class="button button-secondary"
+              href={project.data.repositoryUrl}
+            >
+              GitHubで見る ↗
+            </a>
+          )}
+          {project.data.websiteUrl && (
+            <a class="button button-primary" href={project.data.websiteUrl}>
+              プロジェクトを開く ↗
+            </a>
+          )}
+        </div>
+        {authors.length > 0 && (
+          <p class="article-meta">
+            参加：{authors.map((author) => author.data.displayName).join('・')}
+          </p>
+        )}
+        {project.data.cover && (
+          <Image
+            class="article-cover"
+            src={project.data.cover}
+            alt={project.data.coverAlt!}
+            width={1200}
+            loading="eager"
+          />
+        )}
+      </header>
+      <div class="article-layout">
+        <div class="prose">
+          <Content />
+        </div>
+        {toc.length > 0 && (
+          <aside class="toc" data-pagefind-ignore>
+            <nav aria-label="プロジェクトの目次">
+              <p>
+                ON THIS PAGE <span>目次</span>
+              </p>
+              <ol>
+                {toc.map((heading) => (
+                  <li class:list={{ 'toc-sub': heading.depth === 3 }}>
+                    <a href={`#${heading.slug}`}>{heading.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          </aside>
+        )}
+      </div>
+    </article>
+    <a class="back-link" href="/projects/">
+      ← プロジェクト一覧に戻る
+    </a>
+  </div>
+</Base>

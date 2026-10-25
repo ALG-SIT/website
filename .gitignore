@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+!.env.example
+.playwright-cli/
+test-results/
+playwright-report/
+coverage/
+artifacts/
+public/fonts/alg-jp-*.woff2
