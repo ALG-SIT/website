@@ -1,9 +1,9 @@
-import { defineConfig } from 'astro/config';
 import { satteri, satteriHeadingIdsPlugin } from '@astrojs/markdown-satteri';
-import { articleEnhancements } from './src/hast/article';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'astro/config';
+import { articleEnhancements } from './src/hast/article';
 
 export default defineConfig({
   site: 'https://alg-sit.club',

@@ -5,7 +5,7 @@
 ## 自動検証
 
 - 固定インストール：`bun ci`
-- Markdown・整形：`bun run lint`
+- Biomeによるlint・整形・import順とMDX補助検査：`bun run lint`
 - 型検査：`bun run check`（エラー・警告・ヒントなし）
 - 公開ポリシー：`bun test`（4件）
 - 本番生成：`bun run build`（18ページ、検索対象5ページ）

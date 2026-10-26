@@ -1,10 +1,11 @@
-import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
-import { validateSources } from './validate-source';
+import { type CollectionEntry, getCollection, getEntry } from 'astro:content';
 import { comparePosts, isPublished } from './publishing';
+import { validateSources } from './validate-source';
 
 let validation: Promise<void> | undefined;
 export async function publishedBlog() {
-  await (validation ??= validateSources());
+  validation ??= validateSources();
+  await validation;
   return (
     await getCollection(
       'blog',
@@ -13,7 +14,8 @@ export async function publishedBlog() {
   ).sort(comparePosts);
 }
 export async function publishedProjects() {
-  await (validation ??= validateSources());
+  validation ??= validateSources();
+  await validation;
   return (
     await getCollection(
       'projects',

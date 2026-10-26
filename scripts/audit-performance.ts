@@ -1,8 +1,8 @@
-import { mkdir, writeFile, readdir } from 'node:fs/promises';
-import lighthouse from 'lighthouse';
+import { mkdir, readdir, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { chromium } from '@playwright/test';
 import { launch } from 'chrome-launcher';
-import { resolve } from 'node:path';
+import lighthouse from 'lighthouse';
 import { site } from '../src/data/site';
 
 await mkdir('artifacts/lighthouse', { recursive: true });

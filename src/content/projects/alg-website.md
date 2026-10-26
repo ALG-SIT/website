@@ -1,4 +1,5 @@
 ---
+
 title: 'ALG Official Website'
 description: '活動も、コードも、学びも。サークルの知識をつないでいく、静的なWebサイト。'
 status: active

@@ -1,6 +1,6 @@
 # Ai Love GPU 公式Webサイト 技術仕様書
 
-**文書バージョン：** 1.0.0
+**文書バージョン：** 1.0.1
 **策定日：** 2026年10月25日
 **プロジェクト名：** ALG Official Website
 **対象ドメイン：** https://alg-sit.club
@@ -66,8 +66,9 @@ Ai Love GPU（以下、ALG）の活動内容、技術的な取り組み、開発
 | Sitemap | @astrojs/sitemap | サイトマップ生成 |
 | 画像処理 | astro:assets | 画像最適化 |
 | 型チェック | @astrojs/check | Astro・TypeScript検証 |
-| フォーマット | Prettier + prettier-plugin-astro | コード整形 |
-| Markdown検査 | markdownlint-cli2 | 記事品質検査 |
+| コード検査 | Biome | コード・Astro・CSS等の検査 |
+| フォーマット | Biome（MDXのみPrettier） | コード・Astro・Markdown等の整形 |
+| Markdown検査 | Biome / markdownlint-cli2（MDXのみ） | 記事品質検査 |
 | ソース管理 | GitHub | Gitリポジトリ |
 | CI | GitHub Actions | 品質検証 |
 | CD・ホスティング | Cloudflare Pages | 自動ビルド・公開 |
@@ -502,8 +503,8 @@ CODEOWNERSとGitHubの保護ルールを組み合わせて運用する。
 Pull Requestに対して以下を実行する。
 
 - Bunによる依存関係の固定インストール
-- Prettierによる整形検査
-- Markdown構文検査
+- Biomeによるコード・整形検査（MDXのみPrettierで整形検査）
+- BiomeによるMarkdown検査と、markdownlint-cli2によるMDX検査
 - `astro check`による型検査
 - Astroの本番ビルド
 - ビルドエラーとメタデータ検証エラーの検出
@@ -699,3 +700,7 @@ Cloudflareの管理権限は記事執筆者全員には付与しない。
 ロゴ、アクセントカラー、実際の紹介文章、公開する活動情報、問い合わせ先などは、コンテンツ・デザイン制作時に確定する。
 
 本仕様書の技術構成を実装の基準とし、変更が必要な場合は仕様書のバージョンを更新して記録する。
+
+## 17. 改訂履歴
+
+- 1.0.1：Linter・Formatterの標準をBiomeへ変更。Astroの全体処理を有効化し、Biome未対応のMDXに限りPrettierとmarkdownlint-cli2を使用する。

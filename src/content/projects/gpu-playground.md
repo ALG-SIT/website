@@ -1,4 +1,5 @@
 ---
+
 title: 'GPU Playground'
 description: '小さな計算から、並列処理のおもしろさに触れる。GPU実験ノートのプロジェクト例。'
 status: planning

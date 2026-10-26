@@ -1,9 +1,9 @@
 ---
-import { render } from 'astro:content';
 import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import { statuses } from '../../data/tags';
 import Base from '../../layouts/Base.astro';
 import { publishedProjects, resolveAuthors } from '../../lib/content';
-import { statuses } from '../../data/tags';
 export async function getStaticPaths() {
   return (await publishedProjects()).map((project) => ({
     params: { slug: project.id },
@@ -38,9 +38,7 @@ const toc = headings.filter(
         <h1 data-pagefind-meta="title">{project.data.title}</h1>
         <p class="article-description">{project.data.description}</p>
         <div class="tech-list">
-          {project.data.technologies.map((tech) => (
-            <span>{tech}</span>
-          ))}
+          {project.data.technologies.map((tech) => <span>{tech}</span>)}
         </div>
         <div class="project-links">
           {project.data.repositoryUrl && (
@@ -66,7 +64,7 @@ const toc = headings.filter(
           <Image
             class="article-cover"
             src={project.data.cover}
-            alt={project.data.coverAlt!}
+            alt={project.data.coverAlt ?? project.data.title}
             width={1200}
             loading="eager"
           />
@@ -94,8 +92,6 @@ const toc = headings.filter(
         )}
       </div>
     </article>
-    <a class="back-link" href="/projects/">
-      ← プロジェクト一覧に戻る
-    </a>
+    <a class="back-link" href="/projects/"> ← プロジェクト一覧に戻る </a>
   </div>
 </Base>

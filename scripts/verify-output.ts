@@ -2,8 +2,8 @@ import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { load } from 'cheerio';
 import { parse } from 'yaml';
-import { isPublished } from '../src/lib/publishing';
 import { site } from '../src/data/site';
+import { isPublished } from '../src/lib/publishing';
 
 const root = resolve('dist');
 const failures: string[] = [];
@@ -13,7 +13,9 @@ const assert = (condition: unknown, message: string) => {
 async function filesIn(dir: string): Promise<string[]> {
   return (
     await Promise.all(
-      (await readdir(dir, { withFileTypes: true })).map((entry) =>
+      (
+        await readdir(dir, { withFileTypes: true })
+      ).map((entry) =>
         entry.isDirectory()
           ? filesIn(join(dir, entry.name))
           : [join(dir, entry.name)],
@@ -93,7 +95,7 @@ for (const [path, $] of cache) {
     assert(files.includes(target), `リンク先がありません: ${name} → ${href}`);
     if (url.hash && target.endsWith('.html') && cache.has(target))
       assert(
-        cache.get(target)!(
+        cache.get(target)?.(
           `[id="${decodeURIComponent(url.hash.slice(1)).replaceAll('"', '\\"')}"]`,
         ).length,
         `アンカーがありません: ${name} → ${href}`,

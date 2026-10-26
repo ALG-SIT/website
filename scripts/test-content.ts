@@ -1,11 +1,11 @@
 import {
   cp,
   mkdtemp,
+  readdir,
+  readFile,
   rm,
   symlink,
   writeFile,
-  readFile,
-  readdir,
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';

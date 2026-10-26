@@ -1,10 +1,11 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import Icon from './Icon.astro';
 import { categories, tags } from '../data/tags';
-import { formatDate } from '../lib/publishing';
 import { resolveAuthors } from '../lib/content';
+import { formatDate } from '../lib/publishing';
+import Icon from './Icon.astro';
+
 interface Props {
   post: CollectionEntry<'blog'>;
   index?: number;
@@ -18,7 +19,7 @@ const authors = await resolveAuthors(post.data.authors);
     class:list={['card-visual', `visual-${post.data.category}`]}
     href={`/blog/${post.id}/`}
     tabindex="-1"
-    aria-hidden="true"
+    aria-label={post.data.title}
   >
     {post.data.cover ? (
       <Image
@@ -75,9 +76,11 @@ const authors = await resolveAuthors(post.data.authors);
         {authors.map((author) => author.data.displayName).join('・')}
       </span>
       <div class="tag-list">
-        {post.data.tags.slice(0, 2).map((id) => (
-          <a href={`/tags/${id}/`}>#{tags[id as keyof typeof tags]}</a>
-        ))}
+        {post.data.tags
+          .slice(0, 2)
+          .map((id) => (
+            <a href={`/tags/${id}/`}>#{tags[id as keyof typeof tags]}</a>
+          ))}
       </div>
     </div>
   </div>

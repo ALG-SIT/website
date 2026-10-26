@@ -1,11 +1,13 @@
-import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { load } from 'cheerio';
 
 async function filesIn(directory: string): Promise<string[]> {
   return (
     await Promise.all(
-      (await readdir(directory, { withFileTypes: true })).map((entry) =>
+      (
+        await readdir(directory, { withFileTypes: true })
+      ).map((entry) =>
         entry.isDirectory()
           ? filesIn(join(directory, entry.name))
           : [join(directory, entry.name)],

@@ -1,7 +1,14 @@
 ---
 interface Props {
   name:
-    'arrow' | 'search' | 'sun' | 'menu' | 'close' | 'code' | 'chip' | 'people';
+    | 'arrow'
+    | 'search'
+    | 'sun'
+    | 'menu'
+    | 'close'
+    | 'code'
+    | 'chip'
+    | 'people';
   size?: number;
 }
 const { name, size = 20 } = Astro.props;

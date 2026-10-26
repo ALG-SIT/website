@@ -19,7 +19,7 @@ bun run dev
 | `bun run build`             | 静的生成、日本語フォント最適化、検索インデックス生成、配信成果物検証 |
 | `bun run preview`           | 本番相当の生成サイトを確認                                           |
 | `bun run check`             | Astro・TypeScriptの型検査                                            |
-| `bun run lint`              | Markdown・コード整形検査                                             |
+| `bun run lint`              | Biomeによるlint・整形検査とMDX専用検査                               |
 | `bun run format`            | 整形                                                                 |
 | `bun run format:check`      | 整形検査                                                             |
 | `bun test`                  | 公開ポリシーの単体テスト                                             |
@@ -30,6 +30,16 @@ bun run dev
 日本語フォントはビルドした公開HTMLの使用文字に合わせて縮小し、サイト内から配信します。外部フォントサービスへの通信はありません。開発時は起動時にフォントを用意するため、新しい文字が表示されない場合は開発サーバーを再起動してください。
 
 検索はビルド成果物を使います。`dev`では検索インデックスが生成されないため、検索の確認には`build`後に`preview`を使用してください。
+
+## Linter・Formatter
+
+標準ツールはBiome 2.6.3です。`bun run lint`でlint・整形・import順を検査し、`bun run format`で整形します。`bun run format:check`は整形だけを検査します。
+
+JavaScript・TypeScript・Astro・CSS・JSON・YAML・MarkdownをBiomeで処理します。Astroは`html.experimentalFullSupportEnabled`とHTML formatterを有効化し、マークアップも対象にしています。Tailwind CSS v4のディレクティブも有効です。
+
+BiomeはMDX未対応のため、MDXだけはPrettierで整形し、markdownlint-cli2で構文検査します。`format`・`format:check`・`lint`は、この補助処理も含めて実行します。`prettier-plugin-astro`は使用しません。
+
+設定は`biome.json`で管理し、Git除外対象の生成物と、別管理の`docs/spec.md`・MDXを対象から除外しています。エディターでもBiomeを標準formatterにし、MDXだけPrettierを使用してください。
 
 ## 構成
 

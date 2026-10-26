@@ -1,8 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import Icon from './Icon.astro';
 import { statuses } from '../data/tags';
+import Icon from './Icon.astro';
+
 interface Props {
   project: CollectionEntry<'projects'>;
   index?: number;
@@ -15,7 +16,7 @@ const { project, index = 0 } = Astro.props;
     href={`/projects/${project.id}/`}
     class="project-visual"
     tabindex="-1"
-    aria-hidden="true"
+    aria-label={project.data.title}
   >
     {project.data.cover ? (
       <Image
@@ -60,9 +61,7 @@ const { project, index = 0 } = Astro.props;
     </h3>
     <p>{project.data.description}</p>
     <div class="tech-list">
-      {project.data.technologies.map((tech) => (
-        <span>{tech}</span>
-      ))}
+      {project.data.technologies.map((tech) => <span>{tech}</span>)}
     </div>
   </div>
 </article>

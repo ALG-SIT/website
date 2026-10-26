@@ -12,9 +12,9 @@
     "build": "bun run validate:content && astro build && bun run fonts:build && bun run search:build && bun run verify",
     "preview": "astro preview --host 0.0.0.0",
     "check": "bun run validate:content && astro check",
-    "lint": "markdownlint-cli2 && bun run format:check",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "lint": "biome check --error-on-warnings . && markdownlint-cli2 && bun run format:mdx:check",
+    "format": "biome format --write . && bun run format:mdx",
+    "format:check": "biome format . && bun run format:mdx:check",
     "verify": "bun scripts/verify-output.ts",
     "test": "bun test",
     "test:content": "bun scripts/test-content.ts",
@@ -23,7 +23,9 @@
     "validate:content": "bun scripts/validate-source.ts",
     "fonts:dev": "bun scripts/build-fonts.mjs",
     "fonts:build": "bun scripts/build-fonts.mjs --built",
-    "search:build": "bun scripts/build-search.ts"
+    "search:build": "bun scripts/build-search.ts",
+    "format:mdx": "prettier --write \"src/**/*.mdx\"",
+    "format:mdx:check": "prettier --check \"src/**/*.mdx\""
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.4.5",
@@ -38,6 +40,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
     "@axe-core/playwright": "^4.14.0",
+    "@biomejs/biome": "2.6.3",
     "@fontsource/noto-sans-jp": "^5.3.1",
     "@playwright/test": "^1.64.1",
     "@types/bun": "^1.4.4",
@@ -47,7 +50,6 @@
     "markdownlint-cli2": "^0.24.0",
     "pagefind": "1.5.2",
     "prettier": "^3.9.10",
-    "prettier-plugin-astro": "^1.1.2",
     "subset-font": "^2.9.0",
     "typescript": "6",
     "yaml": "^2.9.1"

@@ -1,13 +1,15 @@
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import subsetFont from 'subset-font';
 import { load } from 'cheerio';
+import subsetFont from 'subset-font';
 
 const built = process.argv.includes('--built');
 async function filesIn(directory) {
   return (
     await Promise.all(
-      (await readdir(directory, { withFileTypes: true })).map((entry) =>
+      (
+        await readdir(directory, { withFileTypes: true })
+      ).map((entry) =>
         entry.isDirectory()
           ? filesIn(join(directory, entry.name))
           : [join(directory, entry.name)],

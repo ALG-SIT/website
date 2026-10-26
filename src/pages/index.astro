@@ -1,10 +1,11 @@
 ---
-import Base from '../layouts/Base.astro';
 import ChipArt from '../components/ChipArt.astro';
 import Icon from '../components/Icon.astro';
 import PostCard from '../components/PostCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import Base from '../layouts/Base.astro';
 import { publishedBlog, publishedProjects } from '../lib/content';
+
 const posts = (await publishedBlog()).slice(0, 3);
 const projects = (await publishedProjects())
   .filter((project) => project.data.featured)
@@ -34,21 +35,21 @@ const activities = [
 ];
 ---
 
-<Base description="AIを学び、GPUで試し、仲間とつくる。Ai Love GPU（ALG）の公式サイト。最新記事やプロジェクト、参加方法を紹介します。">
+<Base
+  description="AIを学び、GPUで試し、仲間とつくる。Ai Love GPU（ALG）の公式サイト。最新記事やプロジェクト、参加方法を紹介します。"
+>
   <section class="hero grid-background">
     <div class="container hero-inner">
       <div class="hero-copy">
-        <p class="eyebrow">
-          <span></span> AI LOVE GPU / TECH COMMUNITY
-        </p>
+        <p class="eyebrow"><span></span> AI LOVE GPU / TECH COMMUNITY</p>
         <h1>
           好奇心を、
-          <br />
+          <br>
           <span>動かそう。</span>
         </h1>
         <p class="hero-description">
           AIを学ぶ。GPUで試す。仲間とつくる。
-          <br />
+          <br>
           まだ知らない可能性を、ここから。
         </p>
         <div class="hero-buttons">
@@ -60,16 +61,15 @@ const activities = [
           </a>
         </div>
         <div class="hero-caption">
-          <span class="status-dot"></span> LEARN. BUILD. SHARE.
+          <span class="status-dot"></span>
+          LEARN. BUILD. SHARE.
         </div>
       </div>
       <ChipArt />
     </div>
     <div class="container hero-bottom">
       <span>POWERED BY CURIOSITY, NOT JUST COMPUTE.</span>
-      <span>
-        SCROLL TO EXPLORE <span aria-hidden="true">↓</span>
-      </span>
+      <span> SCROLL TO EXPLORE <span aria-hidden="true">↓</span> </span>
     </div>
   </section>
   <section class="section container">
@@ -84,7 +84,7 @@ const activities = [
     </div>
     <p class="section-intro">
       Ai Love GPUは、AIやGPUをはじめとする技術を、
-      <br class="desktop-break" />
+      <br class="desktop-break">
       学び、試し、共有するサークルです。専門知識よりも、まずは好奇心。
     </p>
     <div class="activities-grid">
@@ -113,9 +113,7 @@ const activities = [
         </a>
       </div>
       <div class="post-grid">
-        {posts.map((post, index) => (
-          <PostCard post={post} index={index} />
-        ))}
+        {posts.map((post, index) => <PostCard post={post} index={index} />)}
         {!posts.length && (
           <p class="empty-state">最初の記事を準備しています。</p>
         )}
@@ -144,26 +142,22 @@ const activities = [
   <section class="container join-section">
     <div class="join-panel">
       <div>
-        <p class="eyebrow">
-          <span></span> YOUR NEXT EXPERIMENT STARTS HERE
-        </p>
+        <p class="eyebrow"><span></span> YOUR NEXT EXPERIMENT STARTS HERE</p>
         <h2>
           その好奇心、
-          <br class="mobile-break" />
+          <br class="mobile-break">
           一緒に育てよう。
         </h2>
         <p>
           「AIが気になる」「何かつくってみたい」
-          <br />
+          <br>
           その気持ちから、はじめてみませんか。
         </p>
       </div>
       <a href="/join/" class="button button-primary">
         入部案内を見る <Icon name="arrow" size={20} />
       </a>
-      <span class="join-decoration" aria-hidden="true">
-        +
-      </span>
+      <span class="join-decoration" aria-hidden="true"> + </span>
     </div>
   </section>
 </Base>

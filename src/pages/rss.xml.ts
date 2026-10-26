@@ -1,6 +1,6 @@
 import rss from '@astrojs/rss';
-import { publishedBlog } from '../lib/content';
 import { site } from '../data/site';
+import { publishedBlog } from '../lib/content';
 export async function GET() {
   const posts = await publishedBlog();
   return rss({

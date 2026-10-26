@@ -1,8 +1,9 @@
 ---
-import Base from '../../layouts/Base.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
+import Base from '../../layouts/Base.astro';
 import { publishedProjects } from '../../lib/content';
+
 const projects = await publishedProjects();
 ---
 

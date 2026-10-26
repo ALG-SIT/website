@@ -1,6 +1,6 @@
 import { defineCollection, reference } from 'astro:content';
-import { z } from 'astro/zod';
 import { file, glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 import { tags } from './data/tags';
 
 const nonempty = z.string().trim().min(1);

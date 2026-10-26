@@ -1,4 +1,5 @@
 export {};
+
 const themeButton = document.querySelector<HTMLButtonElement>('#theme-toggle');
 function updateThemeLabel() {
   const dark = document.documentElement.dataset.theme === 'dark';
@@ -54,11 +55,9 @@ document
   .querySelectorAll<HTMLButtonElement>('[data-filter]')
   .forEach((button) => {
     button.addEventListener('click', () => {
-      document
-        .querySelectorAll('[data-filter]')
-        .forEach((item) =>
-          item.setAttribute('aria-pressed', String(item === button)),
-        );
+      document.querySelectorAll('[data-filter]').forEach((item) => {
+        item.setAttribute('aria-pressed', String(item === button));
+      });
       let count = 0;
       document
         .querySelectorAll<HTMLElement>('[data-category]')
@@ -125,12 +124,13 @@ let searchSequence = 0;
 let timer: ReturnType<typeof setTimeout>;
 function loadSearch() {
   const searchModulePath: string = '/pagefind/pagefind.js';
-  return (pagefind ??= (
+  pagefind ??= (
     import(/* @vite-ignore */ searchModulePath) as Promise<SearchAPI>
   ).catch((error: unknown) => {
     pagefind = undefined;
     throw error;
-  }));
+  });
+  return pagefind;
 }
 for (const button of document.querySelectorAll<HTMLButtonElement>(
   '[data-search-open]',

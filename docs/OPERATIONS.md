@@ -17,7 +17,7 @@
 
 ## CIが失敗した場合
 
-1. 整形・Markdown検査：ローカルで`bun run lint`を再現します。必要なら`bun run format`後に差分を確認します。
+1. Biome・MDX検査：ローカルで`bun run lint`を再現します。必要なら`bun run format`後に差分を確認します。
 2. スキーマ検証：Frontmatter、タグ、著者参照、画像の代替テキスト、ファイル名を修正します。
 3. ビルド・検索：`bun ci`から再現し、Node・BunのバージョンとPagefindのログを確認します。
 4. 内容を修正してPRへPushし、再レビューを受けます。

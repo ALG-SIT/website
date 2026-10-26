@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { expect, test } from '@playwright/test';
 import { postPages, projectPages, searchablePages } from './content';
 
 for (const width of [375, 768, 1280]) {
@@ -34,7 +34,11 @@ for (const width of [375, 768, 1280]) {
 test('日本語検索は記事・プロジェクトだけを対象にし、Escapeで閉じてフォーカスを戻す', async ({
   page,
 }) => {
-  test.skip(!searchablePages.length, '検索対象の公開コンテンツがありません');
+  const searchPage = searchablePages[0];
+  if (!searchPage) {
+    test.skip(true, '検索対象の公開コンテンツがありません');
+    return;
+  }
   const pageErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.goto('/');
@@ -42,7 +46,7 @@ test('日本語検索は記事・プロジェクトだけを対象にし、Escap
   const search = page.getByRole('button', { name: 'サイト内を検索' });
   await search.click();
   await expect(page.getByRole('dialog')).toBeVisible();
-  await page.getByRole('searchbox').fill(searchablePages[0]!.title);
+  await page.getByRole('searchbox').fill(searchPage.title);
   await expect(page.locator('#search-results a').first()).toBeVisible({
     timeout: 15000,
   });
@@ -63,15 +67,19 @@ test('日本語検索は記事・プロジェクトだけを対象にし、Escap
   expect(pageErrors).toEqual([]);
 });
 test('検索の読み込み失敗から再試行できる', async ({ page }) => {
-  test.skip(!searchablePages.length, '検索対象の公開コンテンツがありません');
+  const searchPage = searchablePages[0];
+  if (!searchPage) {
+    test.skip(true, '検索対象の公開コンテンツがありません');
+    return;
+  }
   await page.goto('/');
   await page.route('**/pagefind/pagefind.js', (route) => route.abort());
   await page.getByRole('button', { name: 'サイト内を検索' }).click();
-  await page.getByRole('searchbox').fill(searchablePages[0]!.title);
+  await page.getByRole('searchbox').fill(searchPage.title);
   await expect(page.getByRole('status')).toContainText('読み込めませんでした');
   await page.unroute('**/pagefind/pagefind.js');
   await page.getByRole('searchbox').fill('');
-  await page.getByRole('searchbox').fill(searchablePages[0]!.title);
+  await page.getByRole('searchbox').fill(searchPage.title);
   await expect(page.locator('#search-results a').first()).toBeVisible({
     timeout: 15000,
   });
@@ -123,11 +131,14 @@ test('モバイルメニューの開閉とEscape操作', async ({ page }) => {
 test('記事目次とコードコピーを利用できる', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   const codePost = postPages.find((post) => post.hasCode && post.heading);
-  test.skip(!codePost, 'コードと目次を持つ公開記事がありません');
-  await page.goto(codePost!.path);
+  if (!codePost) {
+    test.skip(true, 'コードと目次を持つ公開記事がありません');
+    return;
+  }
+  await page.goto(codePost.path);
   const anchor = page
     .getByRole('navigation', { name: 'この記事の目次' })
-    .getByRole('link', { name: codePost!.heading, exact: true });
+    .getByRole('link', { name: codePost.heading, exact: true });
   await anchor.click();
   expect(page.url()).toContain('#');
   await page.getByRole('button', { name: 'コードをコピー' }).first().click();

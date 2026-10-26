@@ -1,10 +1,11 @@
 ---
-import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import PostCard from '../../components/PostCard.astro';
-import Icon from '../../components/Icon.astro';
-import { publishedBlog } from '../../lib/content';
 import { categories } from '../../data/tags';
+import Base from '../../layouts/Base.astro';
+import { publishedBlog } from '../../lib/content';
+
 const posts = await publishedBlog();
 ---
 
@@ -19,21 +20,21 @@ const posts = await publishedBlog();
       description="技術のこと、日々の活動のこと。ALGの学びと挑戦の記録。"
     />
     <div class="listing-toolbar">
-      <div
-        class="filter-controls"
-        role="group"
-        aria-label="カテゴリーで絞り込む"
-      >
-        <button data-filter="all" aria-pressed="true">
+      <fieldset class="filter-controls" aria-label="カテゴリーで絞り込む">
+        <button type="button" data-filter="all" aria-pressed="true">
           すべて
         </button>
         {Object.entries(categories).map(([id, label]) => (
-          <button data-filter={id} aria-pressed="false">
+          <button type="button" data-filter={id} aria-pressed="false">
             {label}
           </button>
         ))}
-      </div>
-      <button class="button button-secondary search-trigger" data-search-open>
+      </fieldset>
+      <button
+        type="button"
+        class="button button-secondary search-trigger"
+        data-search-open
+      >
         <Icon name="search" size={17} />
         記事を検索
       </button>
@@ -42,9 +43,7 @@ const posts = await publishedBlog();
       {posts.length}件の記事
     </p>
     <div class="post-grid">
-      {posts.map((post, index) => (
-        <PostCard post={post} index={index} />
-      ))}
+      {posts.map((post, index) => <PostCard post={post} index={index} />)}
       {!posts.length && <p class="empty-state">記事を準備しています。</p>}
     </div>
   </div>

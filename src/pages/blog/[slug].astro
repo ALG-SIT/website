@@ -1,12 +1,12 @@
 ---
-import { render } from 'astro:content';
 import { Image } from 'astro:assets';
-import Base from '../../layouts/Base.astro';
+import { render } from 'astro:content';
 import PostCard from '../../components/PostCard.astro';
-import { publishedBlog, relatedPosts, resolveAuthors } from '../../lib/content';
-import { categories, tags } from '../../data/tags';
-import { formatDate } from '../../lib/publishing';
 import { site } from '../../data/site';
+import { categories, tags } from '../../data/tags';
+import Base from '../../layouts/Base.astro';
+import { publishedBlog, relatedPosts, resolveAuthors } from '../../lib/content';
+import { formatDate } from '../../lib/publishing';
 export async function getStaticPaths() {
   return (await publishedBlog()).map((post) => ({
     params: { slug: post.id },
@@ -84,7 +84,7 @@ const structured = {
           <Image
             class="article-cover"
             src={post.data.cover}
-            alt={post.data.coverAlt!}
+            alt={post.data.coverAlt ?? post.data.title}
             width={1200}
             loading="eager"
           />
@@ -162,8 +162,6 @@ const structured = {
         </div>
       </section>
     )}
-    <a class="back-link" href="/blog/">
-      ← 記事一覧に戻る
-    </a>
+    <a class="back-link" href="/blog/"> ← 記事一覧に戻る </a>
   </div>
 </Base>

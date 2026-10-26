@@ -1,9 +1,9 @@
 ---
-import Base from '../../layouts/Base.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import PostCard from '../../components/PostCard.astro';
-import { publishedBlog } from '../../lib/content';
 import { tags } from '../../data/tags';
+import Base from '../../layouts/Base.astro';
+import { publishedBlog } from '../../lib/content';
 export async function getStaticPaths() {
   const posts = await publishedBlog();
   return Object.entries(tags)
@@ -27,12 +27,8 @@ const { label, posts } = Astro.props;
       description={`${posts.length}件の記事`}
     />
     <div class="post-grid">
-      {posts.map((post, index) => (
-        <PostCard post={post} index={index} />
-      ))}
+      {posts.map((post, index) => <PostCard post={post} index={index} />)}
     </div>
-    <a href="/blog/" class="back-link">
-      ← すべての記事へ
-    </a>
+    <a href="/blog/" class="back-link"> ← すべての記事へ </a>
   </div>
 </Base>
