@@ -1,37 +1,38 @@
 export {};
 
-const themeButton = document.querySelector<HTMLButtonElement>('#theme-toggle');
-function updateThemeLabel() {
-  const dark = document.documentElement.dataset.theme === 'dark';
-  themeButton?.setAttribute(
-    'aria-label',
-    dark ? 'ライトモードに切り替え' : 'ダークモードに切り替え',
-  );
+const themeSelect = document.querySelector<HTMLSelectElement>('#theme-select');
+const systemTheme = matchMedia('(prefers-color-scheme: dark)');
+// Keep the current preference in memory even when storage is unavailable.
+let themePreference =
+  document.documentElement.dataset.themePreference ?? 'system';
+function applyTheme() {
+  const theme =
+    themePreference === 'system'
+      ? systemTheme.matches
+        ? 'dark'
+        : 'light'
+      : themePreference;
+  document.documentElement.dataset.themePreference = themePreference;
+  document.documentElement.dataset.theme = theme;
+  if (themeSelect) themeSelect.value = themePreference;
+  document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
+    meta.setAttribute('content', theme === 'dark' ? '#171417' : '#ffffff');
+    meta.removeAttribute('media');
+  });
 }
-updateThemeLabel();
-themeButton?.addEventListener('click', () => {
-  document.documentElement.dataset.theme =
-    document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+applyTheme();
+themeSelect?.addEventListener('change', () => {
+  themePreference = themeSelect.value;
+  applyTheme();
   try {
-    localStorage.setItem('alg-theme', document.documentElement.dataset.theme);
+    localStorage.setItem('alg-theme', themePreference);
   } catch {
-    /* 保存できない環境でも切り替え可能 */
+    /* 保存できない環境でも現在のページでは選択を維持 */
   }
-  updateThemeLabel();
 });
-matchMedia('(prefers-color-scheme: dark)').addEventListener(
-  'change',
-  (event) => {
-    try {
-      if (['dark', 'light'].includes(localStorage.getItem('alg-theme') ?? ''))
-        return;
-    } catch {
-      /* OS設定に追従 */
-    }
-    document.documentElement.dataset.theme = event.matches ? 'dark' : 'light';
-    updateThemeLabel();
-  },
-);
+systemTheme.addEventListener('change', () => {
+  if (themePreference === 'system') applyTheme();
+});
 const menuButton = document.querySelector<HTMLButtonElement>('#menu-toggle');
 menuButton?.addEventListener('click', () => {
   const expanded = menuButton.getAttribute('aria-expanded') !== 'true';

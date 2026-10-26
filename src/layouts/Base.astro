@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import BrandWordmark from '../components/BrandWordmark.astro';
 import Icon from '../components/Icon.astro';
 import { navigation, site } from '../data/site';
 
@@ -34,7 +35,7 @@ const structured = article ?? {
   name: site.name,
   alternateName: site.shortName,
   url: site.url,
-  logo: new URL('/favicon.svg', site.url).href,
+  logo: new URL('/brand-square.svg', site.url).href,
   ...(site.github
     ? { sameAs: [site.github, ...site.social.map((s) => s.url)] }
     : {}),
@@ -94,7 +95,16 @@ const structured = article ?? {
     <meta name="twitter:description" content={description}>
     <meta name="twitter:image" content={new URL(image, site.url).href}>
     <meta name="color-scheme" content="dark light">
-    <meta name="theme-color" content="#0b1113">
+    <meta
+      name="theme-color"
+      content="#ffffff"
+      media="(prefers-color-scheme: light)"
+    >
+    <meta
+      name="theme-color"
+      content="#171417"
+      media="(prefers-color-scheme: dark)"
+    >
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link
       rel="alternate"
@@ -104,21 +114,25 @@ const structured = article ?? {
     >
     <script is:inline>
     (() => {
+      let preference = 'system';
       try {
         const stored = localStorage.getItem('alg-theme');
-        document.documentElement.dataset.theme =
-          stored === 'dark' || stored === 'light'
-            ? stored
-            : matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'dark'
-              : 'light';
+        if (stored === 'light' || stored === 'dark') preference = stored;
       } catch {
-        document.documentElement.dataset.theme = matchMedia(
-          '(prefers-color-scheme: dark)',
-        ).matches
-          ? 'dark'
-          : 'light';
+        /* 保存できない場合はOS設定に追従 */
       }
+      const theme =
+        preference === 'system'
+          ? matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light'
+          : preference;
+      document.documentElement.dataset.themePreference = preference;
+      document.documentElement.dataset.theme = theme;
+      document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
+        meta.setAttribute('content', theme === 'dark' ? '#171417' : '#ffffff');
+        meta.removeAttribute('media');
+      });
     })();
     </script>
     <script
@@ -131,10 +145,7 @@ const structured = article ?? {
     <header class="site-header">
       <div class="container header-inner">
         <a href="/" class="brand" aria-label="ALG Ai Love GPU ホーム">
-          <span class="brand-symbol">
-            <Icon name="chip" size={25} />
-          </span>
-          <span> ALG<span class="brand-name">Ai Love GPU</span> </span>
+          <BrandWordmark />
         </a>
         <nav class="desktop-nav" aria-label="メインナビゲーション">
           {navigation.map((item) => (
@@ -157,14 +168,14 @@ const structured = article ?? {
           >
             <Icon name="search" />
           </button>
-          <button
-            type="button"
-            class="icon-button"
-            id="theme-toggle"
-            aria-label="テーマを切り替え"
-          >
-            <Icon name="sun" />
-          </button>
+          <label class="theme-picker">
+            <span class="sr-only">表示テーマ</span>
+            <select id="theme-select" class="theme-select">
+              <option value="system">システム</option>
+              <option value="light">ライト</option>
+              <option value="dark">ダーク</option>
+            </select>
+          </label>
           <a href="/join/" class="header-join">
             参加する <Icon name="arrow" size={16} />
           </a>
@@ -205,11 +216,8 @@ const structured = article ?? {
       <div class="container">
         <div class="footer-top">
           <div>
-            <a href="/" class="brand">
-              <span class="brand-symbol">
-                <Icon name="chip" size={25} />
-              </span>
-              <span> ALG<span class="brand-name">Ai Love GPU</span> </span>
+            <a href="/" class="brand" aria-label="Ai Love GPU ホーム">
+              <BrandWordmark />
             </a>
             <p>
               好奇心を、動かそう。

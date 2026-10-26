@@ -7,7 +7,12 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!docs/spec.md", "!**/*.mdx"]
+    "includes": [
+      "**",
+      "!docs/spec.md",
+      "!**/*.mdx",
+      "!design/brand/originals/wordmark.svg"
+    ]
   },
   "formatter": {
     "enabled": true,

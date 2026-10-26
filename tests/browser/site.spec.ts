@@ -2,35 +2,88 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { postPages, projectPages, searchablePages } from './content';
 
-for (const width of [375, 768, 1280]) {
-  test(`${width}px: 主要ページに横スクロールと重大なアクセシビリティ違反がない`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width, height: 900 });
-    for (const path of [
-      '/',
-      '/blog/',
-      ...(postPages[0] ? [postPages[0].path] : []),
-      ...(projectPages[0] ? [projectPages[0].path] : []),
-      '/join/',
-    ]) {
-      await page.goto(path);
-      await expect(page.locator('h1')).toBeVisible();
-      expect(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= innerWidth,
-        ),
-      ).toBe(true);
-      const accessibility = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
-        .analyze();
-      expect(
-        accessibility.violations,
-        `${path}: ${JSON.stringify(accessibility.violations.map((v) => ({ id: v.id, nodes: v.nodes.map((n) => n.target) })))}`,
-      ).toEqual([]);
-    }
-  });
+for (const colorScheme of ['light', 'dark'] as const) {
+  for (const width of [320, 375, 768, 1280]) {
+    test(`${colorScheme} ${width}px: 主要ページに横スクロールと重大なアクセシビリティ違反がない`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme });
+      await page.setViewportSize({ width, height: 900 });
+      for (const path of [
+        '/',
+        '/blog/',
+        ...(postPages[0] ? [postPages[0].path] : []),
+        ...(projectPages[0] ? [projectPages[0].path] : []),
+        '/join/',
+      ]) {
+        await page.goto(path);
+        await expect(page.locator('h1')).toBeVisible();
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth,
+          ),
+        ).toBe(true);
+        const accessibility = await new AxeBuilder({ page })
+          .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+          .analyze();
+        expect(
+          accessibility.violations,
+          `${path}: ${JSON.stringify(accessibility.violations.map((v) => ({ id: v.id, nodes: v.nodes.map((n) => n.target) })))}`,
+        ).toEqual([]);
+      }
+    });
+  }
 }
+test('ロゴの背景は透明で、文字だけがテーマ色に追従する', async ({ page }) => {
+  await page.goto('/');
+  const select = page.getByRole('combobox', { name: '表示テーマ' });
+  const ink = page.locator('.hero-logo [data-brand-part="ink"]');
+  const caption = page.locator('.hero-logo [data-brand-part="caption"]');
+  const heart = page.locator('.hero-logo [data-brand-part="heart"]');
+  const line = page.locator('.hero-logo [data-brand-part="line"]');
+  const colorOf = (selector: string) =>
+    page
+      .locator(selector)
+      .first()
+      .evaluate((el) => getComputedStyle(el).fill);
+  await select.selectOption('light');
+  await expect(ink).toHaveCSS('fill', 'rgb(23, 23, 23)');
+  await expect(caption).toHaveCSS('fill', 'rgb(98, 91, 96)');
+  const heartColor = await heart.evaluate((el) => getComputedStyle(el).fill);
+  const lineColor = await line.evaluate((el) => getComputedStyle(el).fill);
+  const wordmarkHeart = await colorOf('.brand-wordmark path');
+  await expect(page.locator('.brand-wordmark text').first()).toHaveCSS(
+    'fill',
+    'rgb(23, 23, 23)',
+  );
+  await select.selectOption('dark');
+  await expect(ink).toHaveCSS('fill', 'rgb(248, 244, 246)');
+  await expect(caption).toHaveCSS('fill', 'rgb(196, 186, 193)');
+  await expect(page.locator('.brand-wordmark text').first()).toHaveCSS(
+    'fill',
+    'rgb(248, 244, 246)',
+  );
+  await expect(heart).toHaveCSS('fill', heartColor);
+  await expect(line).toHaveCSS('fill', lineColor);
+  expect(await colorOf('.brand-wordmark path')).toBe(wordmarkHeart);
+  await expect(page.locator('.hero-logo')).toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
+  await expect(page.locator('.hero-logo')).toHaveCSS('box-shadow', 'none');
+  for (const brand of await page.locator('.brand').all()) {
+    await expect(brand).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  }
+  await expect(
+    page.locator('.brand-wordmark rect, .brand-square rect'),
+  ).toHaveCount(2);
+  const logoBox = await page.locator('.brand-square').boundingBox();
+  expect(logoBox).not.toBeNull();
+  expect(Math.abs((logoBox?.width ?? 0) - (logoBox?.height ?? 0))).toBeLessThan(
+    1,
+  );
+});
+
 test('日本語検索は記事・プロジェクトだけを対象にし、Escapeで閉じてフォーカスを戻す', async ({
   page,
 }) => {
@@ -97,14 +150,65 @@ test('カテゴリーの絞り込みと解除', async ({ page }) => {
     postPages.length,
   );
 });
-test('テーマ選択を保存し、ストレージが使えなくても動作する', async ({
+test('テーマはOS追従・手動固定・システムへの復帰と保存に対応する', async ({
   page,
 }) => {
   await page.goto('/');
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.getByRole('button', { name: 'ライトモードに切り替え' }).click();
+  const select = page.getByRole('combobox', { name: '表示テーマ' });
+  const html = page.locator('html');
+  const themeColor = page.locator('meta[name="theme-color"]').first();
+  await expect(select).toHaveValue('system');
+  await expect(html).toHaveAttribute('data-theme', 'dark');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(html).toHaveAttribute('data-theme', 'light');
+  await expect(themeColor).toHaveAttribute('content', '#ffffff');
+  await select.selectOption('dark');
   await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await expect(select).toHaveValue('dark');
+  await expect(html).toHaveAttribute('data-theme', 'dark');
+  await expect(themeColor).toHaveAttribute('content', '#171417');
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await select.selectOption('light');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect(html).toHaveAttribute('data-theme', 'light');
+  await select.selectOption('system');
+  await expect(html).toHaveAttribute('data-theme', 'dark');
+  await page.reload();
+  await expect(select).toHaveValue('system');
+  expect(await page.evaluate(() => localStorage.getItem('alg-theme'))).toBe(
+    'system',
+  );
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(html).toHaveAttribute('data-theme', 'light');
+  // Native select remains usable from the keyboard.
+  await select.focus();
+  await page.keyboard.press('Home');
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
+  await expect(select).toHaveValue('light');
+});
+
+for (const stored of ['light', 'dark', 'unexpected']) {
+  test(`既存のテーマ設定を引き継ぎ、不正値はOS追従にする: ${stored}`, async ({
+    page,
+  }) => {
+    await page.addInitScript(
+      (value) => localStorage.setItem('alg-theme', value),
+      stored,
+    );
+    await page.goto('/');
+    await expect(
+      page.getByRole('combobox', { name: '表示テーマ' }),
+    ).toHaveValue(stored === 'unexpected' ? 'system' : stored);
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-theme',
+      stored === 'light' ? 'light' : 'dark',
+    );
+  });
+}
+
+test('保存不可時も手動テーマを保持し、システムへ戻せる', async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(window, 'localStorage', {
       get() {
@@ -112,8 +216,20 @@ test('テーマ選択を保存し、ストレージが使えなくても動作�
       },
     });
   });
+  await page.goto('/');
+  const select = page.getByRole('combobox', { name: '表示テーマ' });
+  await expect(select).toHaveValue('system');
+  await select.selectOption('light');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await select.selectOption('system');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await select.selectOption('dark');
   await page.reload();
-  await page.getByRole('button', { name: 'ライトモードに切り替え' }).click();
+  await expect(select).toHaveValue('system');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 });
 test('モバイルメニューの開閉とEscape操作', async ({ page }) => {
@@ -154,10 +270,25 @@ test('JavaScriptなしでも本文・ナビゲーション・記事一覧を読�
 }) => {
   const context = await browser.newContext({
     javaScriptEnabled: false,
+    colorScheme: 'dark',
     viewport: { width: 375, height: 812 },
   });
   const page = await context.newPage();
   await page.goto('http://127.0.0.1:4322/blog/');
+  await expect(
+    page.getByRole('combobox', { name: '表示テーマ' }),
+  ).not.toBeVisible();
+  expect(
+    await page
+      .locator('html')
+      .evaluate((el) => getComputedStyle(el).colorScheme),
+  ).toBe('dark');
+  await page.emulateMedia({ colorScheme: 'light' });
+  expect(
+    await page
+      .locator('html')
+      .evaluate((el) => getComputedStyle(el).colorScheme),
+  ).toBe('light');
   await expect(page.locator('.post-card')).toHaveCount(postPages.length);
   await expect(
     page.getByRole('navigation', { name: 'モバイルナビゲーション' }),

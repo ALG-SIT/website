@@ -49,7 +49,8 @@ BiomeはMDX未対応のため、MDXだけはPrettierで整形し、markdownlint-
 - `src/components/`・`src/layouts/`・`src/styles/`：共通UIとデザイントークン
 - `src/pages/`：静的・動的ルート、RSS、robots.txt
 - `scripts/`・`tests/`：生成物検査とテスト
-- `public/`：favicon、標準OGP画像、Cloudflare配信設定
+- `public/`：公開用ロゴ、favicon、標準OGP画像、Cloudflare配信設定
+- `design/brand/originals/`：公開しないロゴ原本。[素材の管理](design/brand/README.md)を参照
 
 ## 開発プレビューと正式公開
 

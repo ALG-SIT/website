@@ -6,8 +6,8 @@
   role="img"
 >
   <title>並列計算の概念図</title>
-  <rect width="800" height="280" rx="10" fill="#132725" />
-  <g stroke="#7ce8c9" fill="none" stroke-width="2">
+  <rect width="800" height="280" rx="10" fill="#fff5f8" />
+  <g stroke="#087970" fill="none" stroke-width="2">
     <rect x="40" y="65" width="130" height="150" rx="6" />
     <path
       d="M40 115h130M40 165h130M83 65v150M127 65v150M180 140h85M250 130l15 10-15 10M535 140h85M605 130l15 10-15 10"
@@ -18,7 +18,7 @@
     <rect x="410" y="155" width="110" height="60" rx="4" />
     <rect x="635" y="95" width="120" height="90" rx="6" />
   </g>
-  <g fill="#e9f0ee" font-family="monospace" font-size="16" text-anchor="middle">
+  <g fill="#ad365f" font-family="monospace" font-size="16" text-anchor="middle">
     <text x="105" y="40">INPUT</text>
     <text x="400" y="40">PARALLEL COMPUTE</text>
     <text x="695" y="75">OUTPUT</text>
@@ -31,7 +31,7 @@
   <text
     x="400"
     y="255"
-    fill="#a9c7bd"
+    fill="#625b60"
     font-family="monospace"
     font-size="10"
     text-anchor="middle"

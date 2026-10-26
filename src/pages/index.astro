@@ -1,5 +1,5 @@
 ---
-import ChipArt from '../components/ChipArt.astro';
+import BrandSquare from '../components/BrandSquare.astro';
 import Icon from '../components/Icon.astro';
 import PostCard from '../components/PostCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
@@ -65,7 +65,13 @@ const activities = [
           LEARN. BUILD. SHARE.
         </div>
       </div>
-      <ChipArt />
+      <div
+        class="hero-logo"
+        role="img"
+        aria-label="AIとGPU、ピンクのハートを組み合わせたAi Love GPUのロゴ"
+      >
+        <BrandSquare />
+      </div>
     </div>
     <div class="container hero-bottom">
       <span>POWERED BY CURIOSITY, NOT JUST COMPUTE.</span>

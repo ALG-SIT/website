@@ -1,9 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <title>ALG</title>
-  <rect width="64" height="64" rx="14" fill="#0b1113" />
-  <g stroke="#7ce8c9" fill="none" stroke-width="2.5">
-    <rect x="17" y="17" width="30" height="30" rx="3" />
-    <rect x="24" y="24" width="16" height="16" rx="1" />
-    <path d="M25 10v7m14-7v7M25 47v7m14-7v7M10 25h7m-7 14h7m30-14h7m-7 14h7" />
-  </g>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="32"
+  height="32"
+  viewBox="140 52 50 50"
+>
+  <title>Ai Love GPU</title>
+  <path
+    d="M165 97 C146 84 140 68 149 61 C155 55 162 58 165 65 C168 58 175 55 181 61 C190 68 184 84 165 97Z"
+    fill="#D4537E"
+  />
 </svg>
