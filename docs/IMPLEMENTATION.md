@@ -7,7 +7,7 @@
 - フォント：Noto Sans JPを同一オリジンで配信。公開HTMLとUIで使用する文字だけをビルド時に抽出し、400・700の2ファイルに縮小。外部フォントサービスへの通信は行わない。ライセンスは`public/fonts/OFL.txt`。
 - デザイン：ライトは白基調、ダークは暗いニュートラル。ピンクを主ボタン・強調に、グリーンを補助リンク・アイコンに使用。ブランド色はピンク`#D4537E`とグリーン`#19ADA5`、文字にはコントラストを確保した濃淡を使用。
 - テーマ：「システム」「ライト」「ダーク」をヘッダーの標準selectで選択。初期値はOS追従。`alg-theme`に`system`・`light`・`dark`を保存し、既存の手動選択も引き継ぐ。保存不可時はページ内で選択を維持。JavaScript無効時はCSSでOS追従。
-- ロゴ：追加されたSVG・JPGの原本は公開対象外の`design/brand/originals/`に保持（`wordmark.svg`・`square-logo.jpg`）。横長SVGは余白・説明を整理し下線をグリーンに変更。正方形は原本JPGの輪郭をパス化した背景透明SVG。画面では`BrandWordmark`・`BrandSquare`をインラインSVGとして表示し、文字は`currentColor`、説明文は`--muted`でテーマに追従。ハートと下線は固有色を維持し、白い背景・外枠・影を付けない。配布用の`public/brand-wordmark.svg`・`public/brand-square.svg`はOS設定に追従する。原本SVGは書き出し時のスタイルを保つためBiomeの対象外。構造化データは正方形SVGを参照。faviconは透明背景のハート、OGPは白背景の1200×630px。OGPの編集元は`src/assets/og-source.svg`で、PNGはSharpで書き出す。
+- ロゴ：提供された原本は公開対象外の`design/brand/originals/`に保持。横長ワードマークは指定フォントを維持するため、黒文字PNG（`412f4846578586c9.png`）と白文字PNG（`0de622ab9b2d421a.png`）を加工せず`public/brand-wordmark-light.png`・`brand-wordmark-dark.png`へ複製。`BrandWordmark`でテーマに応じて切り替え、外周余白はCSSだけで調整。JavaScript無効時もOSに追従。旧公開ワードマークSVGは廃止。正方形は原本JPGの輪郭をパス化した透明SVGで、`BrandSquare`内の文字は`currentColor`、説明文は`--muted`でテーマに追従。ハートと下線は固有色を維持し、ロゴに白い背景・外枠・影を付けない。配布用の`public/brand-square.svg`はOS設定に追従し、構造化データからも参照。原本SVGは書き出し時のスタイルを保つためBiomeの対象外。faviconは透明背景のハート、OGPは白背景の1200×630px。OGPの編集元は`src/assets/og-source.svg`で、PNGはSharpで書き出す。
 - トップ：最新記事3件、featuredプロジェクト最大3件。
 - ブログ：公開日降順。同日の場合はslug順。カテゴリー切り替えは一覧内で実施。
 - 関連記事：共通タグ数の多い順、同数は公開日降順。本人を除き最大3件。

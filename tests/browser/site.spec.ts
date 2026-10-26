@@ -34,38 +34,45 @@ for (const colorScheme of ['light', 'dark'] as const) {
     });
   }
 }
-test('ロゴの背景は透明で、文字だけがテーマ色に追従する', async ({ page }) => {
+test('透過PNGのワードマークと正方形ロゴがテーマに追従する', async ({
+  page,
+}) => {
   await page.goto('/');
   const select = page.getByRole('combobox', { name: '表示テーマ' });
   const ink = page.locator('.hero-logo [data-brand-part="ink"]');
   const caption = page.locator('.hero-logo [data-brand-part="caption"]');
   const heart = page.locator('.hero-logo [data-brand-part="heart"]');
   const line = page.locator('.hero-logo [data-brand-part="line"]');
-  const colorOf = (selector: string) =>
-    page
-      .locator(selector)
-      .first()
-      .evaluate((el) => getComputedStyle(el).fill);
   await select.selectOption('light');
   await expect(ink).toHaveCSS('fill', 'rgb(23, 23, 23)');
   await expect(caption).toHaveCSS('fill', 'rgb(98, 91, 96)');
   const heartColor = await heart.evaluate((el) => getComputedStyle(el).fill);
   const lineColor = await line.evaluate((el) => getComputedStyle(el).fill);
-  const wordmarkHeart = await colorOf('.brand-wordmark path');
-  await expect(page.locator('.brand-wordmark text').first()).toHaveCSS(
-    'fill',
-    'rgb(23, 23, 23)',
-  );
+  const lightWordmarks = page.locator('.brand-wordmark-light');
+  const darkWordmarks = page.locator('.brand-wordmark-dark');
+  for (const image of await lightWordmarks.all()) {
+    await expect(image).toBeVisible();
+    await expect(image).toHaveAttribute('src', '/brand-wordmark-light.png');
+    await expect
+      .poll(() => image.evaluate((el) => (el as HTMLImageElement).naturalWidth))
+      .toBe(1500);
+  }
+  for (const image of await darkWordmarks.all())
+    await expect(image).toBeHidden();
   await select.selectOption('dark');
   await expect(ink).toHaveCSS('fill', 'rgb(248, 244, 246)');
   await expect(caption).toHaveCSS('fill', 'rgb(196, 186, 193)');
-  await expect(page.locator('.brand-wordmark text').first()).toHaveCSS(
-    'fill',
-    'rgb(248, 244, 246)',
-  );
+  for (const image of await lightWordmarks.all())
+    await expect(image).toBeHidden();
+  for (const image of await darkWordmarks.all()) {
+    await expect(image).toBeVisible();
+    await expect(image).toHaveAttribute('src', '/brand-wordmark-dark.png');
+    await expect
+      .poll(() => image.evaluate((el) => (el as HTMLImageElement).naturalWidth))
+      .toBe(1500);
+  }
   await expect(heart).toHaveCSS('fill', heartColor);
   await expect(line).toHaveCSS('fill', lineColor);
-  expect(await colorOf('.brand-wordmark path')).toBe(wordmarkHeart);
   await expect(page.locator('.hero-logo')).toHaveCSS(
     'background-color',
     'rgba(0, 0, 0, 0)',
@@ -74,9 +81,7 @@ test('ロゴの背景は透明で、文字だけがテーマ色に追従する',
   for (const brand of await page.locator('.brand').all()) {
     await expect(brand).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   }
-  await expect(
-    page.locator('.brand-wordmark rect, .brand-square rect'),
-  ).toHaveCount(2);
+  await expect(page.locator('.brand-wordmark svg')).toHaveCount(0);
   const logoBox = await page.locator('.brand-square').boundingBox();
   expect(logoBox).not.toBeNull();
   expect(Math.abs((logoBox?.width ?? 0) - (logoBox?.height ?? 0))).toBeLessThan(
@@ -283,12 +288,16 @@ test('JavaScriptなしでも本文・ナビゲーション・記事一覧を読�
       .locator('html')
       .evaluate((el) => getComputedStyle(el).colorScheme),
   ).toBe('dark');
+  await expect(page.locator('.brand-wordmark-dark').first()).toBeVisible();
+  await expect(page.locator('.brand-wordmark-light').first()).toBeHidden();
   await page.emulateMedia({ colorScheme: 'light' });
   expect(
     await page
       .locator('html')
       .evaluate((el) => getComputedStyle(el).colorScheme),
   ).toBe('light');
+  await expect(page.locator('.brand-wordmark-light').first()).toBeVisible();
+  await expect(page.locator('.brand-wordmark-dark').first()).toBeHidden();
   await expect(page.locator('.post-card')).toHaveCount(postPages.length);
   await expect(
     page.getByRole('navigation', { name: 'モバイルナビゲーション' }),

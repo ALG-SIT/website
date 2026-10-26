@@ -184,8 +184,36 @@ h3 {
 }
 .brand .brand-wordmark {
   display: block;
+  position: relative;
   width: 168px;
+  aspect-ratio: 935 / 329;
+  overflow: hidden;
+}
+/* Show source pixels x=280..1215, y=90..419 without modifying either PNG. */
+.brand-wordmark img {
+  position: absolute;
+  width: calc(1500 / 935 * 100%);
+  max-width: none;
   height: auto;
+  left: calc(-280 / 935 * 100%);
+  top: calc(-90 / 329 * 100%);
+}
+.brand-wordmark-dark {
+  display: none;
+}
+:root[data-theme="dark"] .brand-wordmark-light {
+  display: none;
+}
+:root[data-theme="dark"] .brand-wordmark-dark {
+  display: block;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .brand-wordmark-light {
+    display: none;
+  }
+  :root:not([data-theme]) .brand-wordmark-dark {
+    display: block;
+  }
 }
 .theme-picker {
   display: none;
