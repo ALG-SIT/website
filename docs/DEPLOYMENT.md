@@ -44,7 +44,7 @@ Git連携でプロジェクトを作成します。WorkersやDirect Upload方式
 
 - ロゴ、紹介文、活動情報、参加条件、連絡先、SNSを確認する。
 - サンプル記事・プロジェクトを正式内容へ置き換えるか削除する。
-- OGP画像とfaviconを必要に応じて正式ロゴに置き換える。
+- OGP画像とfaviconを確認する。favicon原本を変更した場合は`bun run icons:build`で派生画像も再生成する。
 - 写真・プロフィールの掲載許可、大学との関係についての表現を確認する。
 - `src/data/site.ts`の連絡先を設定し、`preview`を`false`へ変更する。
 - 入部案内・概要ページなどの「準備中」を確認済みの情報に更新する。
@@ -65,3 +65,17 @@ Git連携でプロジェクトを作成します。WorkersやDirect Upload方式
 記事変更のPRを作り、CIとプレビューが成功することを確認します。`main`へマージした後、独自ドメインで反映を確認します。不正なFrontmatterのテストブランチではCIとPagesビルドが失敗し、本番の正常版が維持されることを確認します。
 
 Cloudflare PagesはCIと独立してビルドするため、mainへの取り込みを必須チェックで保護してください。公開後の問題はPagesのロールバック、またはGitのRevertで復旧します。詳細は[運用手順](OPERATIONS.md)を参照してください。
+
+## 検索公開の確認
+
+今回のSEO改善だけでは`preview: true`を解除しません。正式コンテンツと掲載許可の確認が終わってから、既存の正式公開手順で検索を解禁します。
+
+1. `preview: false`にし、確認済みの連絡先を設定して、`SITE_RELEASE=1 bun run build`が成功することを確認します。本番ブランチはmain、プレビューブランチは引き続き検索拒否です。
+2. 本番でHTTPS、wwwから正規ホストへの301転送、末尾スラッシュへの転送を確認します。静的サイトの転送はホスティング側の挙動も確認してください。
+3. 通常ページが200でnoindexを含まないこと、存在しないURLが404のHTTPステータスでnoindexを含むことを確認します。robots.txtは`Allow: /`で、正規ドメインのサイトマップを参照する必要があります。
+4. favicon各形式・OGP画像・RSS・サイトマップが200で取得できること、canonicalとog:urlが正規URLに一致することを確認します。サイトマップに404・下書き・未来記事がないことも確認します。
+5. [Schema Markup Validator](https://validator.schema.org/)へ生成HTMLを入力し、WebSite・Organizationを検証します。[Rich Results Test](https://search.google.com/test/rich-results)では記事とパンくずを検証します。WebSiteのサイト名はRich Results Testの対象外です。公開前のnoindex・robots制限による警告とデータ自体のエラーは区別します。
+6. 管理担当者が[Google Search Console](https://search.google.com/search-console)のドメインプロパティを作成し、DNSで所有権を確認します。DNSレコードや確認トークンをリポジトリへ保存する必要はありません。
+7. Search Consoleで`https://alg-sit.club/sitemap-index.xml`を送信し、トップ・代表記事のURL検査で取得可能なことを確認して、インデックス登録をリクエストします。公開後はページのインデックス登録・サイトマップ処理結果・構造化データの問題を確認します。
+
+favicon、サイト名、リッチリザルトの表示や反映時期は検索エンジン側の判断によります。プレビュー環境のLighthouse SEOスコアを上げるために検索拒否を解除しないでください。

@@ -21,6 +21,7 @@
     "test:e2e": "playwright test",
     "audit:performance": "bun scripts/audit-performance.ts",
     "validate:content": "bun scripts/validate-source.ts",
+    "icons:build": "bun scripts/build-icons.ts",
     "fonts:dev": "bun scripts/build-fonts.mjs",
     "fonts:build": "bun scripts/build-fonts.mjs --built",
     "search:build": "bun scripts/build-search.ts",
@@ -50,6 +51,7 @@
     "markdownlint-cli2": "^0.24.0",
     "pagefind": "1.5.2",
     "prettier": "^3.9.10",
+    "sharp": "0.35.5",
     "subset-font": "^2.9.0",
     "typescript": "6",
     "yaml": "^2.9.1"

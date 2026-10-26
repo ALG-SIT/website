@@ -4,6 +4,7 @@ import { chromium } from '@playwright/test';
 import { launch } from 'chrome-launcher';
 import lighthouse from 'lighthouse';
 import { site } from '../src/data/site';
+import { isPreview } from '../src/lib/seo';
 
 await mkdir('artifacts/lighthouse', { recursive: true });
 const server = Bun.spawn(
@@ -42,9 +43,7 @@ try {
     chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'],
   });
   let passed = true;
-  const preview =
-    site.preview ||
-    (process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main');
+  const preview = isPreview(site.preview, process.env.CF_PAGES_BRANCH);
   if (preview)
     console.log(
       '開発プレビューのnoindex・robots制限により、SEOは測定のみ行います。',

@@ -1,9 +1,11 @@
 ---
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { statuses } from '../../data/tags';
 import Base from '../../layouts/Base.astro';
 import { publishedProjects, resolveAuthors } from '../../lib/content';
+import { socialImage } from '../../lib/social-image';
 export async function getStaticPaths() {
   return (await publishedProjects()).map((project) => ({
     params: { slug: project.id },
@@ -16,19 +18,22 @@ const authors = await resolveAuthors(project.data.authors);
 const toc = headings.filter(
   (heading) => heading.depth === 2 || heading.depth === 3,
 );
+const image = await socialImage(project.data.cover, project.data.coverAlt);
+const breadcrumbs = [
+  { name: 'ホーム', path: '/' },
+  { name: 'プロジェクト', path: '/projects/' },
+  { name: project.data.title, path: `/projects/${project.id}/` },
+];
 ---
 
 <Base
   title={project.data.title}
   description={project.data.description}
-  image={project.data.cover?.src}
+  image={image}
+  breadcrumbs={breadcrumbs}
 >
   <div class="container page-content">
-    <nav class="breadcrumbs" aria-label="パンくず">
-      <a href="/">ホーム</a>
-      <span>/</span>
-      <a href="/projects/">プロジェクト</a>
-    </nav>
+    <Breadcrumbs items={breadcrumbs} />
     <article data-pagefind-body>
       <header class="article-header">
         <p class="eyebrow">PROJECT / {statuses[project.data.status]}</p>

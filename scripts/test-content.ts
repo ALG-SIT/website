@@ -73,10 +73,16 @@ function content(patch: string, body = '検証用の本文です。') {
   }
   return `---\n${fields.join('\n')}\n---\n\n${body}\n`;
 }
-async function build() {
+async function build(extraEnv: Record<string, string> = {}) {
   const child = Bun.spawn([process.execPath, 'run', 'build'], {
     cwd: directory,
-    env: { ...process.env, SITE_RELEASE: '0', ASTRO_TELEMETRY_DISABLED: '1' },
+    env: {
+      ...process.env,
+      SITE_RELEASE: '0',
+      CF_PAGES_BRANCH: 'main',
+      ASTRO_TELEMETRY_DISABLED: '1',
+      ...extraEnv,
+    },
     stdout: 'pipe',
     stderr: 'pipe',
   });
@@ -217,6 +223,58 @@ try {
   console.log(
     '✓ 記事・プロジェクトが0件でもビルドでき、固定ページは検索対象にならない',
   );
+  // 検索公開の検証は一時コピーだけで行い、作業ツリーのpreviewは変更しない。
+  const sitePath = join(directory, 'src/data/site.ts');
+  const siteSource = await readFile(sitePath, 'utf8');
+  await writeFile(
+    sitePath,
+    siteSource
+      .replace('preview: true', 'preview: false')
+      .replace(
+        'social: [] as',
+        "social: [{ label: '検証用SNS', url: 'https://example.com/alg' }] as",
+      ),
+  );
+  await writeFile(
+    join(directory, 'src/content/blog/seo-cover.md'),
+    content('cover: ../../assets/og-source.svg\ncoverAlt: 記事カバーの検証'),
+  );
+  await writeFile(
+    join(directory, 'src/content/blog/seo-no-cover.md'),
+    content('title: カバーなしの記事').replace(
+      'description: スキーマ検証用の記事です。',
+      'description: カバーなし記事の共有画像を検証します。',
+    ),
+  );
+  await cp(
+    join(root, 'public/og.png'),
+    join(directory, 'src/assets/seo-cover.png'),
+  );
+  await writeFile(
+    join(directory, 'src/content/projects/seo-cover.md'),
+    `---
+ title: 共有画像の検証プロジェクト
+ description: PNGの共有画像を検証します。
+ status: active
+ cover: ../../assets/seo-cover.png
+ coverAlt: プロジェクトカバーの検証
+ ---
+ 検証用プロジェクトです。
+ `
+      .split('\n')
+      .map((line) => line.trimStart())
+      .join('\n'),
+  );
+  result = await build({ SITE_RELEASE: '1', CF_PAGES_BRANCH: 'main' });
+  if (result.code !== 0)
+    throw new Error(`正式公開相当のSEO検証に失敗しました\n${result.log}`);
+  console.log(
+    '✓ 正式公開相当で検索許可・SNSのみのsameAs・SVG/PNGカバー・カバーなし記事を検証',
+  );
+  result = await build({ CF_PAGES_BRANCH: 'feature/seo' });
+  if (result.code !== 0)
+    throw new Error(`ブランチプレビューのSEO検証に失敗しました\n${result.log}`);
+  console.log('✓ 正式コンテンツでもmain以外のプレビューは検索拒否になる');
 } finally {
   await rm(directory, { recursive: true, force: true });
 }
