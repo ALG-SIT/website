@@ -1,12 +1,15 @@
 ---
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import PostCard from '../../components/PostCard.astro';
 import { site } from '../../data/site';
 import { categories, tags } from '../../data/tags';
 import Base from '../../layouts/Base.astro';
 import { publishedBlog, relatedPosts, resolveAuthors } from '../../lib/content';
 import { formatDate } from '../../lib/publishing';
+import { organizationId } from '../../lib/seo';
+import { socialImage } from '../../lib/social-image';
 export async function getStaticPaths() {
   return (await publishedBlog()).map((post) => ({
     params: { slug: post.id },
@@ -20,7 +23,12 @@ const related = relatedPosts(post, await publishedBlog());
 const toc = headings.filter(
   (heading) => heading.depth === 2 || heading.depth === 3,
 );
-const image = post.data.cover?.src;
+const image = await socialImage(post.data.cover, post.data.coverAlt);
+const breadcrumbs = [
+  { name: 'ホーム', path: '/' },
+  { name: '記事', path: '/blog/' },
+  { name: post.data.title, path: `/blog/${post.id}/` },
+];
 const structured = {
   '@context': 'https://schema.org',
   '@type': 'Article',
@@ -34,9 +42,9 @@ const structured = {
     '@type': author.id === 'alg' ? 'Organization' : 'Person',
     name: author.data.displayName,
   })),
-  publisher: { '@type': 'Organization', name: site.name, url: site.url },
+  publisher: { '@id': organizationId },
   mainEntityOfPage: new URL(`/blog/${post.id}/`, site.url).href,
-  image: new URL(image ?? '/og.png', site.url).href,
+  ...(post.data.cover ? { image: new URL(image.src, site.url).href } : {}),
 };
 ---
 
@@ -44,16 +52,14 @@ const structured = {
   title={post.data.title}
   description={post.data.description}
   image={image}
-  article={structured}
+  structuredData={[structured]}
+  breadcrumbs={breadcrumbs}
+  ogType="article"
+  publishedAt={post.data.publishedAt}
+  updatedAt={post.data.updatedAt}
 >
   <div class="container page-content">
-    <nav class="breadcrumbs" aria-label="パンくず">
-      <a href="/">ホーム</a>
-      <span>/</span>
-      <a href="/blog/">記事</a>
-      <span>/</span>
-      <span aria-current="page">{categories[post.data.category]}</span>
-    </nav>
+    <Breadcrumbs items={breadcrumbs} />
     <article data-pagefind-body>
       <header class="article-header">
         <span class="category-label">{categories[post.data.category]}</span>

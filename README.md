@@ -25,6 +25,7 @@ bun run dev
 | `bun test`                  | 公開ポリシーの単体テスト                                             |
 | `bun run test:content`      | 一時ディレクトリで不正コンテンツ・下書き除外を統合検証               |
 | `bun run test:e2e`          | ビルド済みサイトのブラウザテスト                                     |
+| `bun run icons:build`       | SVGからfaviconのPNG・ICO・Apple Touch Iconを再生成                   |
 | `bun run audit:performance` | 代表3ページのモバイルLighthouse測定                                  |
 
 日本語フォントはビルドした公開HTMLの使用文字に合わせて縮小し、サイト内から配信します。外部フォントサービスへの通信はありません。開発時は起動時にフォントを用意するため、新しい文字が表示されない場合は開発サーバーを再起動してください。

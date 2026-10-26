@@ -25,3 +25,12 @@
 ## 外部設定が必要な項目
 
 GitHub remote・CODEOWNERSの実在チーム・ブランチ保護・Cloudflare Pages・DNSはリポジトリだけでは確定できません。[デプロイ手順](DEPLOYMENT.md)に従って管理担当者が設定します。
+
+## SEOと検索公開
+
+- 正規ドメインの定義元は`src/data/site.ts`。Astroのsite設定・canonical・OGP・RSS・robots・構造化データから共有する。
+- 検索公開の判定は`src/lib/seo.ts`の`isPreview`に集約する。`site.preview`がtrue、または`CF_PAGES_BRANCH`がmain以外なら、HTMLはnoindex・nofollow、robotsは全拒否。404は常にnoindex。正式公開の解禁はコンテンツ確認後に行う。
+- 構造化データは配列で出力する。Organizationの固定IDを記事のpublisherから参照し、WebSiteはトップページだけに出力。記事とプロジェクト詳細のパンくずは画面表示とBreadcrumbListで同じデータを使う。確認済みSNSはGitHub設定の有無にかかわらずsameAsに含める。
+- カバー画像はPNGへ変換して共有する。カバーなしのSNS共有には標準OGP画像を使い、Article.imageは実際のカバーがある場合だけ出力する。公開日・更新日は本文、Article、OGPで一致させる。
+- SVGカバーも共有用PNGへ変換するため、Astroの`image.dangerouslyProcessSVG`を有効化する。カバーはコンテンツスキーマで読み込むリポジトリ内のレビュー済み素材に限定し、外部からSVGを受け取るAPIは設けない。
+- favicon派生画像の生成方法は[ブランド素材](../design/brand/README.md)を参照。画像実寸・参照先・canonical・検索公開設定・構造化データの主要項目はビルド後の生成物検査で確認する。
