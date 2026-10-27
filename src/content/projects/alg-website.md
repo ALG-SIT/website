@@ -23,4 +23,4 @@ MarkdownとMDXで書いた記事を、GitHubのPull Requestで確認して公開
 - Astroによる静的生成
 - TypeScriptによる型検査
 - Pagefindによるブラウザ内検索
-- GitHub ActionsとCloudflare Pagesによる継続的な公開
+- GitHub ActionsとCloudflare Workers + Static Assetsによる継続的な公開

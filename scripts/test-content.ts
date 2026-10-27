@@ -75,12 +75,12 @@ function content(patch: string, body = '検証用の本文です。') {
   return `---\n${fields.join('\n')}\n---\n\n${body}\n`;
 }
 async function build(extraEnv: Record<string, string> = {}) {
-  const child = Bun.spawn([process.execPath, 'run', 'build'], {
+  const child = Bun.spawn([process.execPath, 'run', 'build:cloudflare'], {
     cwd: directory,
     env: {
       ...process.env,
       SITE_RELEASE: '0',
-      CF_PAGES_BRANCH: 'main',
+      WORKERS_CI_BRANCH: 'main',
       ASTRO_TELEMETRY_DISABLED: '1',
       ...extraEnv,
     },
@@ -219,7 +219,7 @@ ${codeFixtures}`,
 
   const release = Bun.spawn([process.execPath, 'scripts/verify-output.ts'], {
     cwd: directory,
-    env: { ...process.env, SITE_RELEASE: '1' },
+    env: { ...process.env, SITE_RELEASE: '1', WORKERS_CI_BRANCH: 'main' },
     stdout: 'pipe',
     stderr: 'pipe',
   });
@@ -241,9 +241,14 @@ ${codeFixtures}`,
     }
   }
   await rm(join(directory, '.astro'), { recursive: true, force: true });
-  const emptyBuild = Bun.spawn([process.execPath, 'run', 'build'], {
+  const emptyBuild = Bun.spawn([process.execPath, 'run', 'build:cloudflare'], {
     cwd: directory,
-    env: { ...process.env, SITE_RELEASE: '0', ASTRO_TELEMETRY_DISABLED: '1' },
+    env: {
+      ...process.env,
+      SITE_RELEASE: '0',
+      WORKERS_CI_BRANCH: 'main',
+      ASTRO_TELEMETRY_DISABLED: '1',
+    },
     stdout: 'pipe',
     stderr: 'pipe',
   });
@@ -313,13 +318,13 @@ ${codeFixtures}`,
       .map((line) => line.trimStart())
       .join('\n'),
   );
-  result = await build({ SITE_RELEASE: '1', CF_PAGES_BRANCH: 'main' });
+  result = await build({ SITE_RELEASE: '1', WORKERS_CI_BRANCH: 'main' });
   if (result.code !== 0)
     throw new Error(`正式公開相当のSEO検証に失敗しました\n${result.log}`);
   console.log(
     '✓ 正式公開相当で検索許可・SNSのみのsameAs・SVG/PNGカバー・カバーなし記事を検証',
   );
-  result = await build({ CF_PAGES_BRANCH: 'feature/seo' });
+  result = await build({ SITE_RELEASE: '1', WORKERS_CI_BRANCH: 'feature/seo' });
   if (result.code !== 0)
     throw new Error(`ブランチプレビューのSEO検証に失敗しました\n${result.log}`);
   console.log('✓ 正式コンテンツでもmain以外のプレビューは検索拒否になる');

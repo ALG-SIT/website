@@ -80,7 +80,7 @@ const expected = [
 ];
 for (const path of expected)
   assert(files.includes(join(root, path)), `必要な成果物がありません: ${path}`);
-const preview = isPreview(site.preview, process.env.CF_PAGES_BRANCH);
+const preview = isPreview(site.preview, process.env.WORKERS_CI_BRANCH);
 const robots = await readFile(join(root, 'robots.txt'), 'utf8');
 assert(
   robots.includes(preview ? 'Disallow: /' : 'Allow: /') &&
@@ -455,7 +455,7 @@ for (const collection of ['blog', 'projects']) {
 for (const file of files)
   assert(
     (await stat(file)).size < 25 * 1024 * 1024,
-    `Cloudflare Pagesのファイルサイズ上限を超過: ${file}`,
+    `Cloudflare Workers Static Assetsのファイルサイズ上限を超過: ${file}`,
   );
 assert(!sitemapText.includes('/404'), '404がサイトマップに含まれています');
 if (process.env.SITE_RELEASE === '1') {

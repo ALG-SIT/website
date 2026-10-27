@@ -22,15 +22,17 @@
 - Markdown拡張：SätteriネイティブのHASTプラグインで見出しアンカー・外部リンク属性・横スクロール表を静的生成。remark/rehypeは不使用。
 - セキュリティ：Cloudflareの`_headers`を使用。テーマ初期化・構造化データのためのinline scriptとPagefindのWebAssemblyを許可。外部リソースは既定で許可しない。
 - TypeScript：最新7系は`astro check`未対応のため、互換性のある6.0.3をロック。
+- ホスティング：Workers Static Assetsで`dist/`を配信。Workers BuildsのGit連携を使用し、Wranglerを固定依存に追加。Workerコードは持たない。E2EはWranglerのローカル配信で実行する。
+- Workersビルド：`build:cloudflare`でブランチを必須にし、main以外は`SITE_RELEASE=0`で生成する。
 
 ## 外部設定が必要な項目
 
-GitHub remote・CODEOWNERSの実在チーム・ブランチ保護・Cloudflare Pages・DNSはリポジトリだけでは確定できません。[デプロイ手順](DEPLOYMENT.md)に従って管理担当者が設定します。
+GitHub remote・CODEOWNERSの実在チーム・ブランチ保護・Cloudflare Workers + Static Assets・DNSはリポジトリだけでは確定できません。[デプロイ手順](DEPLOYMENT.md)に従って管理担当者が設定します。
 
 ## SEOと検索公開
 
 - 正規ドメインの定義元は`src/data/site.ts`。Astroのsite設定・canonical・OGP・RSS・robots・構造化データから共有する。
-- 検索公開の判定は`src/lib/seo.ts`の`isPreview`に集約する。`site.preview`がtrue、または`CF_PAGES_BRANCH`がmain以外なら、HTMLはnoindex・nofollow、robotsは全拒否。404は常にnoindex。正式公開の解禁はコンテンツ確認後に行う。
+- 検索公開の判定は`src/lib/seo.ts`の`isPreview`に集約する。`site.preview`がtrue、または`WORKERS_CI_BRANCH`がmain以外なら、HTMLはnoindex・nofollow、robotsは全拒否。404は常にnoindex。正式公開の解禁はコンテンツ確認後に行う。
 - 構造化データは配列で出力する。Organizationの固定IDを記事のpublisherから参照し、WebSiteはトップページだけに出力。記事とプロジェクト詳細のパンくずは画面表示とBreadcrumbListで同じデータを使う。確認済みSNSはGitHub設定の有無にかかわらずsameAsに含める。
 - カバー画像はPNGへ変換して共有する。カバーなしのSNS共有には標準OGP画像を使い、Article.imageは実際のカバーがある場合だけ出力する。公開日・更新日は本文、Article、OGPで一致させる。
 - SVGカバーも共有用PNGへ変換するため、Astroの`image.dangerouslyProcessSVG`を有効化する。カバーはコンテンツスキーマで読み込むリポジトリ内のレビュー済み素材に限定し、外部からSVGを受け取るAPIは設けない。

@@ -1,4 +1,4 @@
-# Cloudflare Pagesへの公開
+# Cloudflare Workers + Static Assetsへの公開
 
 ## 前提
 
@@ -12,24 +12,24 @@ GitHub OrganizationとCloudflare・DNSの管理権限が必要です。ローカ
 4. 管理者のバイパスも運用方針に沿って制限します。
 5. GitHub Actions、Dependabot、管理者の多要素認証を確認します。
 
-## Pages
+## Workers Builds
 
-Git連携でプロジェクトを作成します。WorkersやDirect Upload方式には変更しません。
+Workersを新規作成し、Workers BuildsでGitHubリポジトリを接続します。GitHub Actionsは品質検査を担当し、Workers Buildsは独立してビルド・公開します。`wrangler.jsonc`のWorker名とCloudflare側の名前を一致させてください。
 
-| 設定              | 値                        |
-| ----------------- | ------------------------- |
-| プロジェクト      | `alg-website`             |
-| リポジトリ        | Organizationの`website`   |
-| 本番ブランチ      | `main`                    |
-| Framework preset  | Astro                     |
-| Build system      | v3                        |
-| Root              | `/`                       |
-| Build command     | `bun ci && bun run build` |
-| Output directory  | `dist`                    |
-| Production deploy | 有効                      |
-| Preview deploy    | 有効                      |
+| 設定                   | 値                                   |
+| ---------------------- | ------------------------------------ |
+| Worker名               | `alg-website`                        |
+| リポジトリ             | `ALG-SIT/website`                    |
+| 本番ブランチ           | `main`                               |
+| Root directory         | リポジトリ直下                       |
+| Build command          | `bun ci && bun run build:cloudflare` |
+| Deploy command         | `bunx wrangler deploy`               |
+| Preview command        | `bunx wrangler preview`              |
+| 本番・プレビュービルド | 有効                                 |
 
-本番・プレビュー両方に次を設定します。
+配信対象は`wrangler.jsonc`の`assets.directory: ./dist`で指定します。Astroの静的生成を維持し、Workerスクリプト・アセットbinding・Cloudflareアダプターは追加しません。404は`404-page`、HTMLは`force-trailing-slash`で配信します。`preview_urls: true`と`previews: {}`でプレビューを構成します。
+
+次はWorkers Buildsの**ビルド環境変数**として設定します。Worker実行時の変数とは別です。
 
 | 環境変数                   | 値        |
 | -------------------------- | --------- |
@@ -38,7 +38,11 @@ Git連携でプロジェクトを作成します。WorkersやDirect Upload方式
 | `SKIP_DEPENDENCY_INSTALL`  | `1`       |
 | `ASTRO_TELEMETRY_DISABLED` | `1`       |
 
-正式公開する本番環境だけに`SITE_RELEASE=1`を追加します。プレビュー環境では未設定にします。`CF_PAGES_BRANCH`はCloudflareが設定する値を使用します。`main`以外のプレビュービルドにはnoindexとrobotsの全拒否を付けます。プレビューは非公開ストレージではないため、機密情報を含めないでください。
+`WORKERS_CI_BRANCH`はWorkers Buildsが設定する値を使用し、手動で固定しません。`build:cloudflare`はこの値が空なら失敗します。main以外では子プロセスの`SITE_RELEASE`を`0`にしてビルドし、HTMLにnoindex・nofollow、robotsに全拒否を付けます。
+
+正式公開の準備が完了したらビルド環境変数に`SITE_RELEASE=1`を設定します。mainでは公開検証を実行し、機能ブランチでは同じ変数が渡されても公開検証を無効にしてプレビューを生成します。`site.preview: true`の間は本番も検索拒否になります。プレビューは閲覧制限ではありません。
+
+ローカルでは`bun run build`後に`bun run preview:cloudflare`を実行し、`http://localhost:8787/`で配信を確認します。`bun run preview`はAstroによる表示確認用です。`bun run deploy`は既存の`dist/`を本番へ公開するため、手動公開でも必ず先に対象ブランチと環境変数を設定して`build:cloudflare`を成功させてください。通常の公開はWorkers Buildsに任せます。
 
 ## 正式コンテンツへの差し替え
 
@@ -52,19 +56,24 @@ Git連携でプロジェクトを作成します。WorkersやDirect Upload方式
 
 公開検証はプレビュー設定・連絡先未設定・既知のサンプルを検出します。活動文章の正確性・掲載許可は担当者が確認します。
 
-## ドメイン
+## 初回公開とドメイン
 
-1. `alg-sit.club`のCloudflare DNS管理状態を確認します。
-2. PagesのCustom domainsに`alg-sit.club`を追加し、DNSと証明書の有効化を待ちます。
-3. `www.alg-sit.club`も設定し、`public/_redirects`の301リダイレクトを検証します。必要に応じてCloudflareのRedirect Ruleでも同じ転送を設定します。
-4. HTTPS、末尾スラッシュ、Canonical、RSS、サイトマップ、404のHTTPステータスを確認します。
-5. Pages既定の`*.pages.dev`の本番URLは、CloudflareのRedirect Ruleで独自ドメインへ転送し、PRプレビューのホスト名は対象外にします。
+1. `alg-sit.club`のネームサーバーがCloudflareで管理されていることを確認します。Workers Custom Domainsの前提です。
+2. Workers Buildsを設定し、WorkersのURLで表示、日本語検索、RSS、サイトマップ、セキュリティヘッダー、404、末尾スラッシュ転送を確認します。
+3. 記事変更のPRでGitHubの`Quality checks`とWorkersのプレビューが成功すること、プレビューのnoindex・robots全拒否を確認します。不正なFrontmatterではビルドが失敗し、本番の正常版が維持されることも確認します。
+4. WorkersのSettings > Domains & Routesで`alg-sit.club`と`www.alg-sit.club`をCustom Domainに設定します。証明書の有効化とHTTPSを確認します。
+5. `public/_redirects`によるwwwから正規ホストへの301転送、Canonical、RSS、サイトマップ、存在しないURLの404ステータスを確認します。
+6. mainへのマージから独自ドメインへの自動公開までを確認します。
 
-## リリース確認
+`_headers`と`_redirects`はStatic Assetsでも使用します。本番の`workers.dev` URLとプレビューURLは別に確認し、プレビューまで独自ドメインへ転送するルールを設定しないでください。
 
-記事変更のPRを作り、CIとプレビューが成功することを確認します。`main`へマージした後、独自ドメインで反映を確認します。不正なFrontmatterのテストブランチではCIとPagesビルドが失敗し、本番の正常版が維持されることを確認します。
+## リリース・復旧
 
-Cloudflare PagesはCIと独立してビルドするため、mainへの取り込みを必須チェックで保護してください。公開後の問題はPagesのロールバック、またはGitのRevertで復旧します。詳細は[運用手順](OPERATIONS.md)を参照してください。
+mainへの取り込みは引き続き必須チェックで保護します。Workers BuildsはGitHub Actionsの終了を待つ仕組みではないため、PRレビューと必須チェックを省略しません。
+
+公開後の問題はWorkersの正常版へのロールバック、またはGit Revertで復旧します。詳細は[運用手順](OPERATIONS.md)を参照してください。
+
+設定仕様は[Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)、[ビルド環境](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/)を参照してください。
 
 ## 検索公開の確認
 

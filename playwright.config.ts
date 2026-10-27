@@ -13,8 +13,8 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'bun run preview --port 4322 --ignore-lock',
+    command: 'bun run preview:cloudflare --ip 127.0.0.1 --port 4322 --local',
     url: 'http://127.0.0.1:4322',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
 });
