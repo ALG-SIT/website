@@ -43,7 +43,7 @@ try {
     chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'],
   });
   let passed = true;
-  const preview = isPreview(site.preview, process.env.CF_PAGES_BRANCH);
+  const preview = isPreview(site.preview, process.env.WORKERS_CI_BRANCH);
   if (preview)
     console.log(
       '開発プレビューのnoindex・robots制限により、SEOは測定のみ行います。',

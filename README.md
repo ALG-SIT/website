@@ -17,7 +17,7 @@ bun run dev
 | --------------------------- | -------------------------------------------------------------------- |
 | `bun run dev`               | ローカル開発。下書き・将来記事も確認可能                             |
 | `bun run build`             | 静的生成、日本語フォント最適化、検索インデックス生成、配信成果物検証 |
-| `bun run preview`           | 本番相当の生成サイトを確認                                           |
+| `bun run preview`           | Astroで生成サイトを確認                                              |
 | `bun run check`             | Astro・TypeScriptの型検査                                            |
 | `bun run lint`              | Biomeによるlint・整形検査とMDX専用検査                               |
 | `bun run format`            | 整形                                                                 |
@@ -31,6 +31,10 @@ bun run dev
 日本語フォントはビルドした公開HTMLの使用文字に合わせて縮小し、サイト内から配信します。外部フォントサービスへの通信はありません。開発時は起動時にフォントを用意するため、新しい文字が表示されない場合は開発サーバーを再起動してください。
 
 検索はビルド成果物を使います。`dev`では検索インデックスが生成されないため、検索の確認には`build`後に`preview`を使用してください。
+
+Cloudflare配信の確認は`bun run build`後に`bun run preview:cloudflare`（ポート8787）を使用します。`bun run test:e2e`もWranglerのローカル配信を使用します。Workers Buildsは`bun ci && bun run build:cloudflare`で生成し、`bunx wrangler deploy`で本番公開、`bunx wrangler preview`でブランチプレビューを作成します。`build:cloudflare`には`WORKERS_CI_BRANCH`が必須です。
+
+`bun run deploy`はビルド済みの`dist/`を本番公開します。通常はWorkers Buildsによる自動公開を使用してください。手動公開・独自ドメイン切り替えは[デプロイ手順](docs/DEPLOYMENT.md)を参照してください。
 
 ## Linter・Formatter
 

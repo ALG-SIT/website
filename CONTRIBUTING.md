@@ -5,7 +5,7 @@
 3. [コンテンツガイド](docs/CONTENT_GUIDE.md)に従いFrontmatterを記入します。
 4. `bun run dev`で表示を確認します。検索・本番公開範囲は`bun run build`と`bun run preview`で確認します。
 5. `bun run lint`、`bun run check`、`bun test`、`bun run build`を実行します。
-6. PushしてPull Requestを作成し、CIとCloudflare Pagesプレビューを確認します。
+6. PushしてPull Requestを作成し、CIとCloudflare Workersプレビューを確認します。
 7. 1名以上のレビューを受け、`main`へマージします。コード・設定・依存関係の変更はWebサイト管理担当者が確認します。
 8. 自動デプロイ完了後、公開URLで変更箇所を確認します。
 

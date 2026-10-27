@@ -41,7 +41,7 @@ const canonical = new URL(
 const pageTitle = title
   ? `${title} | ${site.name}`
   : `${site.name} — 好奇心を、動かそう。`;
-const preview = isPreview(site.preview, import.meta.env.CF_PAGES_BRANCH);
+const preview = isPreview(site.preview, import.meta.env.WORKERS_CI_BRANCH);
 const structured = [
   organization(),
   ...(Astro.url.pathname === '/'

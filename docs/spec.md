@@ -71,10 +71,10 @@ Ai Love GPU（以下、ALG）の活動内容、技術的な取り組み、開発
 | Markdown検査 | Biome / markdownlint-cli2（MDXのみ） | 記事品質検査 |
 | ソース管理 | GitHub | Gitリポジトリ |
 | CI | GitHub Actions | 品質検証 |
-| CD・ホスティング | Cloudflare Pages | 自動ビルド・公開 |
+| CD・ホスティング | Cloudflare Workers + Static Assets | 自動ビルド・公開 |
 | DNS | Cloudflare DNS | ドメイン管理 |
 
-バージョン管理は原則として各ライブラリの安定版を使用する。導入時に互換性を検証した組み合わせを`bun.lock`に固定し、Cloudflare PagesとGitHub Actionsでも同じBunバージョンを使用する。
+バージョン管理は原則として各ライブラリの安定版を使用する。導入時に互換性を検証した組み合わせを`bun.lock`に固定し、Cloudflare Workers + Static AssetsとGitHub Actionsでも同じBunバージョンを使用する。
 
 ## 3. アーキテクチャ
 
@@ -82,7 +82,7 @@ Ai Love GPU（以下、ALG）の活動内容、技術的な取り組み、開発
 
 Astroの`output: 'static'`を採用する。
 
-すべての公開ページをビルド時に静的生成する。Cloudflare Pagesでは生成済みのHTML、CSS、JavaScript、画像などを配信する。
+すべての公開ページをビルド時に静的生成する。Cloudflare Workers + Static Assetsでは生成済みのHTML、CSS、JavaScript、画像などを配信する。
 
 以下は初期構成では使用しない。
 
@@ -456,7 +456,7 @@ Astroの画像処理機能を利用し、適切な表示サイズ、代替テキ
 
 ### 10.2 サイズ制限
 
-Cloudflare Pagesの単一ファイルサイズ上限に抵触しない構成とする。
+Cloudflare Workers + Static Assetsの単一ファイルサイズ上限に抵触しない構成とする。
 
 記事画像は可能な限り圧縮し、1ファイルあたり2 MiB以下を推奨する。
 
@@ -486,7 +486,7 @@ GitHub Organization配下に公式サイト用リポジトリを設置する。
 6. 自動チェックとプレビュー生成を実行する。
 7. レビューを受ける。
 8. `main`へマージする。
-9. Cloudflare Pagesで本番ビルド・公開する。
+9. Cloudflare Workers + Static Assetsで本番ビルド・公開する。
 
 ### 11.3 レビュー
 
@@ -511,18 +511,18 @@ Pull Requestに対して以下を実行する。
 
 すべての必須チェックが成功した場合にのみマージ可能とする。
 
-### 11.5 Cloudflare Pages
+### 11.5 Cloudflare Workers + Static Assets
 
-GitHub連携方式を採用する。
+Workers BuildsによるGitHub連携方式を採用する。配信設定は`wrangler.jsonc`で管理し、Workerスクリプトは追加しない。
 
 | 設定 | 値 |
 |---|---|
 | プロジェクト名 | `alg-website` |
 | 本番ブランチ | `main` |
-| Framework preset | Astro |
-| Build system | v3 |
-| Build command | `bun ci && bun run build` |
-| Output directory | `dist` |
+| Build command | `bun ci && bun run build:cloudflare` |
+| Deploy command | `bunx wrangler deploy` |
+| Preview command | `bunx wrangler preview` |
+| assets.directory | `./dist` |
 | Root directory | `/` |
 | 自動本番デプロイ | 有効 |
 | プレビューデプロイ | 有効 |
@@ -530,7 +530,7 @@ GitHub連携方式を採用する。
 
 Bunのバージョンは導入時に検証した安定版を固定する。Cloudflareの自動依存関係インストールは無効化し、ビルドコマンドで明示的に`bun ci`を実行する。
 
-Pagefindのインデックス生成は`bun run build`の処理に含める。
+Pagefindのインデックス生成は`bun run build`の処理に含める。Workers Buildsでは`build:cloudflare`から呼び出す。`WORKERS_CI_BRANCH`を必須とし、main以外は検索を拒否して`SITE_RELEASE`を無効化する。HTMLの末尾スラッシュを強制し、未検出URLはカスタム404を返す。
 
 ### 11.6 デプロイ失敗時
 
@@ -538,7 +538,7 @@ CIまたはビルド失敗時は公開を行わない。
 
 本番デプロイ失敗時には直前の正常な公開バージョンを維持する。
 
-問題があるデプロイを公開した場合は、Cloudflare Pagesのロールバック機能またはGitのRevertで復旧できる運用とする。
+問題があるデプロイを公開した場合は、Cloudflare Workers + Static Assetsのロールバック機能またはGitのRevertで復旧できる運用とする。
 
 ---
 
@@ -589,7 +589,7 @@ Lighthouseは代表ページのモバイル環境を中心に測定する。実�
 - GitHub Actionsには必要最小限の権限を付与する。
 - MDXやHTMLに含まれるコードを信頼できる状態でのみビルドする。
 - 外部サイトからコピーした埋め込みスクリプトは無条件に許可しない。
-- セキュリティヘッダーはCloudflare Pagesの`_headers`等で設定する。
+- セキュリティヘッダーはCloudflare Workers + Static Assetsの`_headers`等で設定する。
 
 ### 12.4 プライバシー
 
@@ -622,7 +622,7 @@ Cloudflareの管理権限は記事執筆者全員には付与しない。
 - `README.md`：開発環境構築、ローカル起動、全体構成
 - `CONTRIBUTING.md`：記事執筆・Pull Requestの手順
 - `docs/CONTENT_GUIDE.md`：Markdownの書式とFrontmatter
-- `docs/DEPLOYMENT.md`：Cloudflare Pagesの設定・デプロイ手順
+- `docs/DEPLOYMENT.md`：Cloudflare Workers + Static Assetsの設定・デプロイ手順
 - `docs/OPERATIONS.md`：権限管理・障害対応・引き継ぎ
 - `.github/PULL_REQUEST_TEMPLATE.md`：PR確認項目
 
@@ -631,7 +631,7 @@ Cloudflareの管理権限は記事執筆者全員には付与しない。
 - 依存関係と脆弱性を定期的に確認する。
 - 年度交代時に管理権限を確認する。
 - アカウント管理責任者を複数名確保する。
-- Cloudflare Pagesの構成を文書化する。
+- Cloudflare Workers + Static Assetsの構成を文書化する。
 - GitHubのリポジトリとCloudflareの設定をサークル資産として引き継ぐ。
 
 ---
@@ -671,11 +671,11 @@ Cloudflareの管理権限は記事執筆者全員には付与しない。
 - [ ] RSSとサイトマップが生成される。
 - [ ] Canonical URLとOGP情報が設定される。
 - [ ] PR作成時にCIが実行される。
-- [ ] PR用のCloudflare Pagesプレビューを閲覧できる。
+- [ ] PR用のCloudflare Workers + Static Assetsプレビューを閲覧できる。
 - [ ] `main`へのマージによって自動公開される。
 - [ ] ビルド失敗時に不完全なサイトが公開されない。
 - [ ] 管理権限と記事投稿手順が文書化されている。
-- [ ] 無料プランのCloudflare Pagesで運用できる。
+- [ ] 無料プランのCloudflare Workers + Static Assetsで運用できる。
 
 ---
 
@@ -692,7 +692,7 @@ Cloudflareの管理権限は記事執筆者全員には付与しない。
 **Package Manager:** Bun
 **Repository:** GitHub Organization
 **CI:** GitHub Actions
-**CD / Hosting:** Cloudflare Pages
+**CD / Hosting:** Cloudflare Workers + Static Assets
 **Database:** なし
 **CMS:** なし
 **Primary Domain:** alg-sit.club
