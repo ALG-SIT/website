@@ -9,6 +9,7 @@ import {
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { load } from 'cheerio';
 
 const directory = await mkdtemp(join(tmpdir(), 'alg-content-'));
 const root = process.cwd();
@@ -130,6 +131,23 @@ try {
     throw new Error(`slug重複を検出できませんでした\n${result.log}`);
   console.log('✓ MarkdownとMDXのslug重複');
   await rm(join(directory, 'src/content/blog/hello-alg.md'));
+  const codeFixtures = [
+    '```python\nprint("hello")\n```',
+    '```js\nconsole.log("hello");\n```',
+    '```\nplain content\n```',
+    '```text\nplain text\n```',
+    '```ruby\nputs "hello"\n```',
+    `\`\`\`ts\nconst longLine = "${'x'.repeat(250)}";\n\`\`\``,
+  ].join('\n\n');
+  await writeFile(
+    join(directory, 'src/content/blog/markdown-fixture.md'),
+    content('', codeFixtures)
+      .replace('title: 検証用記事', 'title: Markdownコード検証')
+      .replace(
+        'description: スキーマ検証用の記事です。',
+        'description: Markdownコード欄を検証します。',
+      ),
+  );
   await writeFile(
     join(directory, 'src/content/blog/mdx-fixture.mdx'),
     content(
@@ -138,7 +156,9 @@ try {
 
 ## MDX検証
 
-<Callout title="ALG_MDX_RENDERED_9481"><p>コンポーネントの検証。</p></Callout>`,
+<Callout title="ALG_MDX_RENDERED_9481"><p>コンポーネントの検証。</p></Callout>
+
+${codeFixtures}`,
     ),
   );
   await writeFile(
@@ -169,6 +189,34 @@ try {
   )
     throw new Error('MDXコンポーネントがレンダリングされませんでした');
   console.log('✓ MDXからAstroコンポーネントを生成');
+  for (const slug of ['markdown-fixture', 'mdx-fixture']) {
+    const $ = load(
+      await readFile(join(directory, `dist/blog/${slug}/index.html`), 'utf8'),
+    );
+    const labels = $('.code-header .code-language')
+      .map((_, el) => $(el).text())
+      .get();
+    if (
+      JSON.stringify(labels) !==
+      JSON.stringify([
+        'Python',
+        'JavaScript',
+        'Text',
+        'Text',
+        'ruby',
+        'TypeScript',
+      ])
+    )
+      throw new Error(`${slug}: コード言語名が不正です: ${labels}`);
+    if (
+      $('.code-wrapper > pre > code').length !== 6 ||
+      $('.code-wrapper > .code-header:first-child').length !== 6 ||
+      !$('.code-wrapper pre').last().text().includes('x'.repeat(250))
+    )
+      throw new Error(`${slug}: コード本文またはヘッダーが失われました`);
+  }
+  console.log('✓ Markdown・MDXの言語名・別名・指定なし・長いコードを静的生成');
+
   const release = Bun.spawn([process.execPath, 'scripts/verify-output.ts'], {
     cwd: directory,
     env: { ...process.env, SITE_RELEASE: '1' },

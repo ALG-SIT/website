@@ -210,14 +210,26 @@ const structured = [
           >
             <Icon name="search" />
           </button>
-          <label class="theme-picker">
-            <span class="sr-only">表示テーマ</span>
-            <select id="theme-select" class="theme-select">
-              <option value="system">システム</option>
-              <option value="light">ライト</option>
-              <option value="dark">ダーク</option>
-            </select>
-          </label>
+          <fieldset class="theme-picker" aria-label="表示テーマ">
+            {(
+              [
+                ['light', 'sun', 'ライト'],
+                ['dark', 'moon', 'ダーク'],
+                ['system', 'monitor', 'OS設定に従う'],
+              ] as const
+            ).map(([value, icon, label]) => (
+              <button
+                type="button"
+                class="icon-button theme-button"
+                data-theme-value={value}
+                aria-label={label}
+                aria-pressed="false"
+                title={label}
+              >
+                <Icon name={icon} size={18} />
+              </button>
+            ))}
+          </fieldset>
           <a href="/join/" class="header-join">
             参加する <Icon name="arrow" size={16} />
           </a>

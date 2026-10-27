@@ -216,21 +216,21 @@ h3 {
   }
 }
 .theme-picker {
+  min-width: 0;
+  margin: 0;
   display: none;
 }
 :root[data-theme] .theme-picker {
-  display: block;
-}
-.theme-select {
-  min-height: 40px;
-  width: 100px;
-  padding: 7px 5px;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
   border: 1px solid var(--control-line);
-  border-radius: 6px;
+  border-radius: 8px;
+}
+.theme-button[aria-pressed="true"] {
   background: var(--surface);
   color: var(--text);
-  font-size: 12px;
-  cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--control-line);
 }
 .desktop-nav {
   display: flex;
@@ -1018,7 +1018,7 @@ h3 {
   border-radius: 4px;
 }
 .prose pre {
-  padding: 40px 22px 22px;
+  padding: 22px;
   border: 1px solid var(--line);
   border-radius: 6px;
   overflow-x: auto;
@@ -1032,19 +1032,41 @@ h3 {
   background-color: var(--shiki-dark-bg) !important;
 }
 .code-wrapper {
-  position: relative;
   min-width: 0;
+  margin: 24px 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+}
+.code-language {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.code-wrapper pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
 }
 .copy-button {
-  position: absolute;
-  right: 10px;
-  top: 9px;
+  flex-shrink: 0;
   color: var(--muted);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   border-radius: 4px;
   padding: 3px 9px;
-  font-size: 10px;
+  font-size: 11px;
 }
 .table-wrapper {
   overflow-x: auto;
@@ -1177,6 +1199,9 @@ h3 {
 .article-callout p:last-child,
 .info-panel > :last-child {
   margin-bottom: 0;
+}
+.info-panel > :first-child {
+  margin-top: 0;
 }
 .info-panel h2 {
   font-size: 1.2rem;
@@ -1422,10 +1447,6 @@ dialog::backdrop {
   }
   .brand .brand-wordmark {
     width: 118px;
-  }
-  .theme-select {
-    width: 86px;
-    font-size: 11px;
   }
   .header-actions .icon-button {
     width: 32px;
