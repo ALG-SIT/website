@@ -14,43 +14,46 @@ const activities = [
   {
     number: '01',
     icon: 'chip' as const,
-    title: 'AIを、深く知る。',
-    english: 'LEARN & EXPERIMENT',
-    text: '機械学習の基礎から、気になる最新技術まで。手を動かし、仕組みをひもとく。',
+    title: '計算資源を、共有する。',
+    english: 'BUILD & OPERATE',
+    text: 'AI・機械学習に必要なGPU資源を共同で使うために。機材の選定から保守まで、学生の手で計算基盤を構築・運用します。',
   },
   {
     number: '02',
     icon: 'code' as const,
-    title: 'アイデアを、かたちに。',
+    title: 'AIで、アイデアをかたちに。',
     english: 'BUILD & CREATE',
-    text: 'GPUやコードを使って、思いつきを動くものに。小さな実験から、次のプロジェクトへ。',
+    text: 'Discordで開発の知見を共有し、個人開発やチーム開発へ。ワークショップ、LT会、展示会で作品と工夫を伝え合う場をつくります。',
   },
   {
     number: '03',
     icon: 'people' as const,
-    title: '学びを、ひらく。',
-    english: 'SHARE & CONNECT',
-    text: 'うまくいったことも、つまずいたことも。記事や対話を通じて、仲間と共有する。',
+    title: '数学と理論から、学ぶ。',
+    english: 'LEARN & UNDERSTAND',
+    text: 'AIの基礎となる数学と理論を、勉強会やセミナーで。入門から専門的な内容まで、それぞれの理解に合わせて学びを深める場をつくります。',
   },
 ];
 ---
 
 <Base
-  description="AIを学び、GPUで試し、仲間とつくる。Ai Love GPU（ALG）の公式サイト。最新記事やプロジェクト、参加方法を紹介します。"
+  description="芝浦工業大学の学生団体ALG（AI Love GPU）。共有GPU資源の運用、AI駆動開発、勉強会とセミナーの活動・計画を紹介します。"
 >
   <section class="hero grid-background">
     <div class="container hero-inner">
       <div class="hero-copy">
-        <p class="eyebrow"><span></span> AI LOVE GPU / TECH COMMUNITY</p>
+        <p class="eyebrow">
+          <span></span>
+          AI LOVE GPU / SHIBAURA INSTITUTE OF TECHNOLOGY
+        </p>
         <h1>
           好奇心を、
           <br>
           <span>動かそう。</span>
         </h1>
         <p class="hero-description">
-          AIを学ぶ。GPUで試す。仲間とつくる。
+          AIを学び、作り、動かす。
           <br>
-          まだ知らない可能性を、ここから。
+          芝浦工業大学の仲間と、アイデアを形に。
         </p>
         <div class="hero-buttons">
           <a href="/about/" class="button button-primary">
@@ -68,7 +71,7 @@ const activities = [
       <div
         class="hero-logo"
         role="img"
-        aria-label="AIとGPU、ピンクのハートを組み合わせたAi Love GPUのロゴ"
+        aria-label="AIとGPU、ピンクのハートを組み合わせたAI Love GPUのロゴ"
       >
         <BrandSquare />
       </div>
@@ -81,17 +84,17 @@ const activities = [
   <section class="section container">
     <div class="section-header">
       <div>
-        <p class="eyebrow">OUR MINDSET</p>
-        <h2>「やってみたい」が、出発点。</h2>
+        <p class="eyebrow">OUR ACTIVITIES</p>
+        <h2>学びと開発をつなぐ、3つの活動。</h2>
       </div>
       <a class="text-link" href="/about/">
         私たちについて <Icon name="arrow" size={18} />
       </a>
     </div>
     <p class="section-intro">
-      Ai Love GPUは、AIやGPUをはじめとする技術を、
+      ALG（AI Love GPU）は、芝浦工業大学の学生が、
       <br class="desktop-break">
-      学び、試し、共有するサークルです。専門知識よりも、まずは好奇心。
+      計算資源・開発力・理論の理解を共同で身につける団体です。
     </p>
     <div class="activities-grid">
       {activities.map((activity) => (

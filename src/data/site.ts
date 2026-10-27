@@ -1,9 +1,9 @@
 export const site = {
-  name: 'Ai Love GPU',
+  name: 'AI Love GPU',
   shortName: 'ALG',
   url: 'https://alg-sit.club',
   description:
-    'AIを学ぶ。GPUで試す。つくって、共有する。Ai Love GPU（ALG）の活動と技術の記録。',
+    '芝浦工業大学の学生団体ALG（AI Love GPU）。共有GPU資源の運用、AI駆動開発、勉強会とセミナーを通じて、AIを学び、作り、使うための環境をつくります。',
   // 正式な紹介文・掲載許可・連絡先を確認してから false にする。
   preview: true,
   github: '',
