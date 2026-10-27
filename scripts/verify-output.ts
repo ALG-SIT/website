@@ -76,7 +76,6 @@ const expected = [
   'fonts/alg-jp-400.woff2',
   'fonts/alg-jp-700.woff2',
   '_headers',
-  '_redirects',
 ];
 for (const path of expected)
   assert(files.includes(join(root, path)), `必要な成果物がありません: ${path}`);

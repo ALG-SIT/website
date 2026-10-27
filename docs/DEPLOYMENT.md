@@ -62,10 +62,10 @@ Workersを新規作成し、Workers BuildsでGitHubリポジトリを接続し�
 2. Workers Buildsを設定し、WorkersのURLで表示、日本語検索、RSS、サイトマップ、セキュリティヘッダー、404、末尾スラッシュ転送を確認します。
 3. 記事変更のPRでGitHubの`Quality checks`とWorkersのプレビューが成功すること、プレビューのnoindex・robots全拒否を確認します。不正なFrontmatterではビルドが失敗し、本番の正常版が維持されることも確認します。
 4. WorkersのSettings > Domains & Routesで`alg-sit.club`と`www.alg-sit.club`をCustom Domainに設定します。証明書の有効化とHTTPSを確認します。
-5. `public/_redirects`によるwwwから正規ホストへの301転送、Canonical、RSS、サイトマップ、存在しないURLの404ステータスを確認します。
+5. Canonical、RSS、サイトマップ、存在しないURLの404ステータスを確認します。
 6. mainへのマージから独自ドメインへの自動公開までを確認します。
 
-`_headers`と`_redirects`はStatic Assetsでも使用します。本番の`workers.dev` URLとプレビューURLは別に確認し、プレビューまで独自ドメインへ転送するルールを設定しないでください。
+`_headers`はStatic Assetsでも使用します。`_redirects`によるwwwから正規ホストへの転送は無効化しています。本番の`workers.dev` URLとプレビューURLは別に確認してください。
 
 ## リリース・復旧
 
@@ -80,7 +80,7 @@ mainへの取り込みは引き続き必須チェックで保護します。Work
 今回のSEO改善だけでは`preview: true`を解除しません。正式コンテンツと掲載許可の確認が終わってから、既存の正式公開手順で検索を解禁します。
 
 1. `preview: false`にし、確認済みの連絡先を設定して、`SITE_RELEASE=1 bun run build`が成功することを確認します。本番ブランチはmain、プレビューブランチは引き続き検索拒否です。
-2. 本番でHTTPS、wwwから正規ホストへの301転送、末尾スラッシュへの転送を確認します。静的サイトの転送はホスティング側の挙動も確認してください。
+2. 本番でHTTPS、末尾スラッシュへの転送を確認します。静的サイトの転送はホスティング側の挙動も確認してください。
 3. 通常ページが200でnoindexを含まないこと、存在しないURLが404のHTTPステータスでnoindexを含むことを確認します。robots.txtは`Allow: /`で、正規ドメインのサイトマップを参照する必要があります。
 4. favicon各形式・OGP画像・RSS・サイトマップが200で取得できること、canonicalとog:urlが正規URLに一致することを確認します。サイトマップに404・下書き・未来記事がないことも確認します。
 5. [Schema Markup Validator](https://validator.schema.org/)へ生成HTMLを入力し、WebSite・Organizationを検証します。[Rich Results Test](https://search.google.com/test/rich-results)では記事とパンくずを検証します。WebSiteのサイト名はRich Results Testの対象外です。公開前のnoindex・robots制限による警告とデータ自体のエラーは区別します。
