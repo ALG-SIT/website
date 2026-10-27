@@ -23,7 +23,7 @@
 - セキュリティ：Cloudflareの`_headers`を使用。テーマ初期化・構造化データのためのinline scriptとPagefindのWebAssemblyを許可。外部リソースは既定で許可しない。
 - TypeScript：最新7系は`astro check`未対応のため、互換性のある6.0.3をロック。
 - ホスティング：Workers Static Assetsで`dist/`を配信。Workers BuildsのGit連携を使用し、Wranglerを固定依存に追加。Workerコードは持たない。E2EはWranglerのローカル配信で実行する。
-- Workersビルド：`build:cloudflare`でブランチを必須にし、main以外は`SITE_RELEASE=0`で生成する。Pagesのブランチ変数へのフォールバックは設けない。
+- Workersビルド：`build:cloudflare`でブランチを必須にし、main以外は`SITE_RELEASE=0`で生成する。
 
 ## 外部設定が必要な項目
 

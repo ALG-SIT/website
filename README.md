@@ -34,7 +34,7 @@ bun run dev
 
 Cloudflare配信の確認は`bun run build`後に`bun run preview:cloudflare`（ポート8787）を使用します。`bun run test:e2e`もWranglerのローカル配信を使用します。Workers Buildsは`bun ci && bun run build:cloudflare`で生成し、`bunx wrangler deploy`で本番公開、`bunx wrangler preview`でブランチプレビューを作成します。`build:cloudflare`には`WORKERS_CI_BRANCH`が必須です。
 
-`bun run deploy`はビルド済みの`dist/`を本番公開します。通常はWorkers Buildsによる自動公開を使用してください。手動公開・独自ドメイン切り替えは[デプロイ手順](docs/DEPLOYMENT.md)を参照してください。
+`bun run deploy`はビルド済みの`dist/`を本番公開します。通常はWorkers Buildsによる自動公開を使用してください。手動公開・独自ドメイン設定は[デプロイ手順](docs/DEPLOYMENT.md)を参照してください。
 
 ## Linter・Formatter
 

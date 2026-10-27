@@ -27,7 +27,7 @@ Workersを新規作成し、Workers BuildsでGitHubリポジトリを接続し�
 | Preview command        | `bunx wrangler preview`              |
 | 本番・プレビュービルド | 有効                                 |
 
-配信対象は`wrangler.jsonc`の`assets.directory: ./dist`で指定します。Astroの静的生成を維持し、Workerスクリプト・アセットbinding・Cloudflareアダプターは追加しません。404は`404-page`、HTMLは`force-trailing-slash`で配信します。`preview_urls: true`と`previews: {}`でプレビューを構成します。旧方式のプレビューを使用する既存Workerでは、Cloudflareの案内に従ってWorker Previewsへ切り替えてください。
+配信対象は`wrangler.jsonc`の`assets.directory: ./dist`で指定します。Astroの静的生成を維持し、Workerスクリプト・アセットbinding・Cloudflareアダプターは追加しません。404は`404-page`、HTMLは`force-trailing-slash`で配信します。`preview_urls: true`と`previews: {}`でプレビューを構成します。
 
 次はWorkers Buildsの**ビルド環境変数**として設定します。Worker実行時の変数とは別です。
 
@@ -38,7 +38,7 @@ Workersを新規作成し、Workers BuildsでGitHubリポジトリを接続し�
 | `SKIP_DEPENDENCY_INSTALL`  | `1`       |
 | `ASTRO_TELEMETRY_DISABLED` | `1`       |
 
-`WORKERS_CI_BRANCH`はWorkers Buildsが設定する値を使用し、手動で固定しません。`build:cloudflare`はこの値が空なら失敗します。main以外では子プロセスの`SITE_RELEASE`を`0`にしてビルドし、HTMLにnoindex・nofollow、robotsに全拒否を付けます。Pages専用の環境変数には対応しません。
+`WORKERS_CI_BRANCH`はWorkers Buildsが設定する値を使用し、手動で固定しません。`build:cloudflare`はこの値が空なら失敗します。main以外では子プロセスの`SITE_RELEASE`を`0`にしてビルドし、HTMLにnoindex・nofollow、robotsに全拒否を付けます。
 
 正式公開の準備が完了したらビルド環境変数に`SITE_RELEASE=1`を設定します。mainでは公開検証を実行し、機能ブランチでは同じ変数が渡されても公開検証を無効にしてプレビューを生成します。`site.preview: true`の間は本番も検索拒否になります。プレビューは閲覧制限ではありません。
 
@@ -56,14 +56,14 @@ Workersを新規作成し、Workers BuildsでGitHubリポジトリを接続し�
 
 公開検証はプレビュー設定・連絡先未設定・既知のサンプルを検出します。活動文章の正確性・掲載許可は担当者が確認します。
 
-## Pagesからの切り替えとドメイン
+## 初回公開とドメイン
 
 1. `alg-sit.club`のネームサーバーがCloudflareで管理されていることを確認します。Workers Custom Domainsの前提です。
-2. 既存Pagesを残した状態でWorkers Buildsを設定し、WorkersのURLで表示、日本語検索、RSS、サイトマップ、セキュリティヘッダー、404、末尾スラッシュ転送を確認します。
+2. Workers Buildsを設定し、WorkersのURLで表示、日本語検索、RSS、サイトマップ、セキュリティヘッダー、404、末尾スラッシュ転送を確認します。
 3. 記事変更のPRでGitHubの`Quality checks`とWorkersのプレビューが成功すること、プレビューのnoindex・robots全拒否を確認します。不正なFrontmatterではビルドが失敗し、本番の正常版が維持されることも確認します。
-4. 切り替え時にPages側の独自ドメインの関連付けと競合するDNSレコードを整理し、WorkersのSettings > Domains & Routesで`alg-sit.club`と`www.alg-sit.club`をCustom Domainに設定します。証明書の有効化とHTTPSを確認します。
-5. `public/_redirects`によるwwwから正規ホストへの301転送、Canonical、RSS、サイトマップ、存在しないURLの404ステータスを確認します。既存のRedirect Ruleがある場合は競合を解消します。
-6. mainへのマージから独自ドメインへの反映までを確認し、Pagesの自動デプロイを停止します。Pagesプロジェクトはこの移行では削除しません。
+4. WorkersのSettings > Domains & Routesで`alg-sit.club`と`www.alg-sit.club`をCustom Domainに設定します。証明書の有効化とHTTPSを確認します。
+5. `public/_redirects`によるwwwから正規ホストへの301転送、Canonical、RSS、サイトマップ、存在しないURLの404ステータスを確認します。
+6. mainへのマージから独自ドメインへの自動公開までを確認します。
 
 `_headers`と`_redirects`はStatic Assetsでも使用します。本番の`workers.dev` URLとプレビューURLは別に確認し、プレビューまで独自ドメインへ転送するルールを設定しないでください。
 
@@ -71,9 +71,9 @@ Workersを新規作成し、Workers BuildsでGitHubリポジトリを接続し�
 
 mainへの取り込みは引き続き必須チェックで保護します。Workers BuildsはGitHub Actionsの終了を待つ仕組みではないため、PRレビューと必須チェックを省略しません。
 
-公開後の問題はWorkersの正常版へのロールバック、またはGit Revertで復旧します。Pagesへ切り戻す場合は、移行前のコミットをPagesで再デプロイし、独自ドメインとDNSを元に戻します。移行後のコードはPagesのブランチ変数を参照しません。詳細は[運用手順](OPERATIONS.md)を参照してください。
+公開後の問題はWorkersの正常版へのロールバック、またはGit Revertで復旧します。詳細は[運用手順](OPERATIONS.md)を参照してください。
 
-設定仕様は[公式移行ガイド](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/)、[Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)、[ビルド環境](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/)を参照してください。
+設定仕様は[Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)、[ビルド環境](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/)を参照してください。
 
 ## 検索公開の確認
 

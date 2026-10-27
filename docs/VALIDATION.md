@@ -30,19 +30,18 @@
 
 INPと実ユーザーのCore Web Vitalsは未測定です。自動検査はWCAG適合性の完全な保証ではないため、公開前に実端末とキーボードでも最終確認してください。
 
-## 公開前の残作業（2026年10月25日時点）
+## 公開前の残作業
 
 - サンプルを正式コンテンツへ差し替え、掲載許可・連絡先・入部情報を確認する。
-- 実在するCODEOWNERS、保護ルール、GitHubとPagesの連携を設定する。
-- Pages環境変数、DNS、証明書、リダイレクトを設定する。
+- 実在するCODEOWNERS、保護ルール、GitHubとWorkers Buildsの連携を設定する。
+- Workers Buildsのビルド環境変数、DNS、証明書、リダイレクトを設定する。
 - PRプレビュー、mainからの自動公開、ビルド失敗時の正常版維持、ロールバックを実環境で確認する。
 
 詳細は[デプロイ手順](DEPLOYMENT.md)を参照してください。
 
+## Workers Static Assetsの配信検証（2026年10月27日）
 
-## Workers Static Assetsへの移行検証（2026年10月27日）
-
-Wrangler 4.153.0を固定依存に追加し、ローカルのWorkers Static Assets配信で次を確認しました。上記の10月25日の記録は移行前の履歴です。
+Wrangler 4.153.0を固定依存に追加し、ローカルのWorkers Static Assets配信で次を確認しました。10月25日の記録に加え、配信設定を検証した結果です。
 
 - `bun ci`：ロックファイルによる固定インストール成功。
 - `bun run lint`：Biome・MDX検査成功。
@@ -53,4 +52,4 @@ Wrangler 4.153.0を固定依存に追加し、ローカルのWorkers Static Asse
 - `bun run test:e2e`：Wranglerのローカル配信で27件成功。末尾スラッシュへの307転送、カスタム404とHTTPステータス、セキュリティ・キャッシュヘッダー、日本語検索、既存の表示・操作・アクセシビリティを確認。
 - `bunx wrangler deploy --dry-run`：設定と92個のアセットの読み込み成功。実際の公開・アップロードは未実施。
 
-Cloudflare側のWorkers Builds接続、ビルド環境変数、ブランチプレビュー、本番自動公開、独自ドメイン・DNS・HTTPS・www転送、ロールバックは実環境での確認が必要です。[移行手順](DEPLOYMENT.md)に従って設定してください。サイトの`preview: true`は維持しています。Lighthouseは今回再測定していません。
+Cloudflare側のWorkers Builds接続、ビルド環境変数、ブランチプレビュー、本番自動公開、独自ドメイン・DNS・HTTPS・www転送、ロールバックは実環境での確認が必要です。[デプロイ手順](DEPLOYMENT.md)に従って設定してください。サイトの`preview: true`は維持しています。Lighthouseは今回再測定していません。
