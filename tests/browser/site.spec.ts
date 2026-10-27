@@ -15,6 +15,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
         ...(postPages[0] ? [postPages[0].path] : []),
         ...(projectPages[0] ? [projectPages[0].path] : []),
         '/join/',
+        '/about/',
       ]) {
         await page.goto(path);
         await expect(page.locator('h1')).toBeVisible();
@@ -38,12 +39,12 @@ test('透過PNGのワードマークと正方形ロゴがテーマに追従す�
   page,
 }) => {
   await page.goto('/');
-  const select = page.getByRole('combobox', { name: '表示テーマ' });
+  const themes = page.getByRole('group', { name: '表示テーマ' });
   const ink = page.locator('.hero-logo [data-brand-part="ink"]');
   const caption = page.locator('.hero-logo [data-brand-part="caption"]');
   const heart = page.locator('.hero-logo [data-brand-part="heart"]');
   const line = page.locator('.hero-logo [data-brand-part="line"]');
-  await select.selectOption('light');
+  await themes.getByRole('button', { name: 'ライト', exact: true }).click();
   await expect(ink).toHaveCSS('fill', 'rgb(23, 23, 23)');
   await expect(caption).toHaveCSS('fill', 'rgb(98, 91, 96)');
   const heartColor = await heart.evaluate((el) => getComputedStyle(el).fill);
@@ -59,7 +60,7 @@ test('透過PNGのワードマークと正方形ロゴがテーマに追従す�
   }
   for (const image of await darkWordmarks.all())
     await expect(image).toBeHidden();
-  await select.selectOption('dark');
+  await themes.getByRole('button', { name: 'ダーク', exact: true }).click();
   await expect(ink).toHaveCSS('fill', 'rgb(248, 244, 246)');
   await expect(caption).toHaveCSS('fill', 'rgb(196, 186, 193)');
   for (const image of await lightWordmarks.all())
@@ -159,39 +160,51 @@ test('テーマはOS追従・手動固定・システムへの復帰と保存に
   page,
 }) => {
   await page.goto('/');
-  const select = page.getByRole('combobox', { name: '表示テーマ' });
+  const themes = page.getByRole('group', { name: '表示テーマ' });
   const html = page.locator('html');
   const themeColor = page.locator('meta[name="theme-color"]').first();
-  await expect(select).toHaveValue('system');
+  await expect(
+    themes.getByRole('button', { name: 'OS設定に従う', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
   await expect(html).toHaveAttribute('data-theme', 'dark');
   await page.emulateMedia({ colorScheme: 'light' });
   await expect(html).toHaveAttribute('data-theme', 'light');
   await expect(themeColor).toHaveAttribute('content', '#ffffff');
-  await select.selectOption('dark');
+  await themes.getByRole('button', { name: 'ダーク', exact: true }).click();
   await page.reload();
-  await expect(select).toHaveValue('dark');
+  await expect(
+    themes.getByRole('button', { name: 'ダーク', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
   await expect(html).toHaveAttribute('data-theme', 'dark');
   await expect(themeColor).toHaveAttribute('content', '#171417');
   await page.emulateMedia({ colorScheme: 'dark' });
-  await select.selectOption('light');
+  await themes.getByRole('button', { name: 'ライト', exact: true }).click();
   await page.emulateMedia({ colorScheme: 'light' });
   await page.emulateMedia({ colorScheme: 'dark' });
   await expect(html).toHaveAttribute('data-theme', 'light');
-  await select.selectOption('system');
+  await themes
+    .getByRole('button', { name: 'OS設定に従う', exact: true })
+    .click();
   await expect(html).toHaveAttribute('data-theme', 'dark');
   await page.reload();
-  await expect(select).toHaveValue('system');
+  await expect(
+    themes.getByRole('button', { name: 'OS設定に従う', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
   expect(await page.evaluate(() => localStorage.getItem('alg-theme'))).toBe(
     'system',
   );
   await page.emulateMedia({ colorScheme: 'light' });
   await expect(html).toHaveAttribute('data-theme', 'light');
-  // Native select remains usable from the keyboard.
-  await select.focus();
-  await page.keyboard.press('Home');
-  await page.keyboard.press('ArrowDown');
+  await themes.getByRole('button', { name: 'ライト', exact: true }).focus();
   await page.keyboard.press('Enter');
-  await expect(select).toHaveValue('light');
+  await expect(
+    themes.getByRole('button', { name: 'ライト', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Space');
+  await expect(
+    themes.getByRole('button', { name: 'ダーク', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
 });
 
 for (const stored of ['light', 'dark', 'unexpected']) {
@@ -204,8 +217,10 @@ for (const stored of ['light', 'dark', 'unexpected']) {
     );
     await page.goto('/');
     await expect(
-      page.getByRole('combobox', { name: '表示テーマ' }),
-    ).toHaveValue(stored === 'unexpected' ? 'system' : stored);
+      page.locator(
+        `[data-theme-value="${stored === 'unexpected' ? 'system' : stored}"]`,
+      ),
+    ).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('html')).toHaveAttribute(
       'data-theme',
       stored === 'light' ? 'light' : 'dark',
@@ -222,19 +237,25 @@ test('保存不可時も手動テーマを保持し、システムへ戻せる',
     });
   });
   await page.goto('/');
-  const select = page.getByRole('combobox', { name: '表示テーマ' });
-  await expect(select).toHaveValue('system');
-  await select.selectOption('light');
+  const themes = page.getByRole('group', { name: '表示テーマ' });
+  await expect(
+    themes.getByRole('button', { name: 'OS設定に従う', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await themes.getByRole('button', { name: 'ライト', exact: true }).click();
   await page.emulateMedia({ colorScheme: 'light' });
   await page.emulateMedia({ colorScheme: 'dark' });
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await select.selectOption('system');
+  await themes
+    .getByRole('button', { name: 'OS設定に従う', exact: true })
+    .click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.emulateMedia({ colorScheme: 'light' });
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await select.selectOption('dark');
+  await themes.getByRole('button', { name: 'ダーク', exact: true }).click();
   await page.reload();
-  await expect(select).toHaveValue('system');
+  await expect(
+    themes.getByRole('button', { name: 'OS設定に従う', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 });
 test('モバイルメニューの開閉とEscape操作', async ({ page }) => {
@@ -262,6 +283,13 @@ test('記事目次とコードコピーを利用できる', async ({ page, conte
     .getByRole('link', { name: codePost.heading, exact: true });
   await anchor.click();
   expect(page.url()).toContain('#');
+  await expect(page.locator('.code-language').first()).toHaveText('Python');
+  await expect(page.locator('.code-header').first()).toContainText('コピー');
+  const headerBox = await page.locator('.code-header').first().boundingBox();
+  const codeBox = await page.locator('.code-wrapper pre').first().boundingBox();
+  expect(
+    headerBox && codeBox && headerBox.y + headerBox.height <= codeBox.y + 1,
+  ).toBeTruthy();
   await page.getByRole('button', { name: 'コードをコピー' }).first().click();
   await expect(
     page.getByRole('button', { name: 'コードをコピー' }).first(),
@@ -270,6 +298,62 @@ test('記事目次とコードコピーを利用できる', async ({ page, conte
     await page.locator('.prose pre code').first().textContent(),
   );
 });
+test('長いコードは本文だけを横スクロールできる', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  const codePost = postPages.find((post) => post.hasCode);
+  expect(codePost).toBeDefined();
+  await page.goto(codePost?.path ?? '/blog/');
+  const pre = page.locator('.code-wrapper pre').first();
+  await pre.locator('code').evaluate((code) => {
+    code.textContent = 'long_code_'.repeat(100);
+  });
+  await pre.scrollIntoViewIfNeeded();
+  const header = page.locator('.code-header').first();
+  const before = await header.boundingBox();
+  const scrollLeft = await pre.evaluate((el) => {
+    el.scrollLeft = el.scrollWidth;
+    return el.scrollLeft;
+  });
+  expect(scrollLeft).toBeGreaterThan(0);
+  expect(await header.boundingBox()).toEqual(before);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await expect(
+    header.getByRole('button', { name: 'コードをコピー' }),
+  ).toBeInViewport();
+});
+
+test('案内パネルの見出しは本文中でも余分な上余白が付かない', async ({
+  page,
+}) => {
+  await page.goto('/join/');
+  const heading = page.locator('.info-panel h2');
+  await expect(heading).toHaveCSS('margin-top', '0px');
+  await page.locator('.info-panel').evaluate((panel) => {
+    panel.parentElement?.classList.add('prose');
+  });
+  await expect(heading).toHaveCSS('margin-top', '0px');
+});
+
+test('JavaScriptなしでもコードの言語名を読める', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  const codePost = postPages.find((post) => post.hasCode);
+  expect(codePost).toBeDefined();
+  await page.goto(`http://127.0.0.1:4322${codePost?.path}`);
+  await expect(page.locator('.code-language').first()).toHaveText('Python');
+  await expect(page.locator('.code-wrapper pre code').first()).toContainText(
+    'left =',
+  );
+  await expect(
+    page.getByRole('button', { name: 'コードをコピー' }),
+  ).toHaveCount(0);
+  await context.close();
+});
+
 test('JavaScriptなしでも本文・ナビゲーション・記事一覧を読める', async ({
   browser,
 }) => {
@@ -281,7 +365,7 @@ test('JavaScriptなしでも本文・ナビゲーション・記事一覧を読�
   const page = await context.newPage();
   await page.goto('http://127.0.0.1:4322/blog/');
   await expect(
-    page.getByRole('combobox', { name: '表示テーマ' }),
+    page.getByRole('group', { name: '表示テーマ' }),
   ).not.toBeVisible();
   expect(
     await page

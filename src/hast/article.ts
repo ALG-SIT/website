@@ -1,5 +1,29 @@
 import { defineHastPlugin } from 'satteri';
 
+const languageLabels: Record<string, string> = {
+  python: 'Python',
+  py: 'Python',
+  javascript: 'JavaScript',
+  js: 'JavaScript',
+  typescript: 'TypeScript',
+  ts: 'TypeScript',
+  jsx: 'JSX',
+  tsx: 'TSX',
+  html: 'HTML',
+  css: 'CSS',
+  json: 'JSON',
+  bash: 'Bash',
+  sh: 'Shell',
+  shell: 'Shell',
+  yaml: 'YAML',
+  yml: 'YAML',
+  markdown: 'Markdown',
+  md: 'Markdown',
+  text: 'Text',
+  txt: 'Text',
+  plaintext: 'Text',
+};
+
 export const articleEnhancements = defineHastPlugin({
   name: 'alg-article-enhancements',
   element: [
@@ -64,7 +88,55 @@ export const articleEnhancements = defineHastPlugin({
     {
       filter: ['pre'],
       visit(node, context) {
-        context.setProperty(node, 'tabIndex', 0);
+        const code = node.children.find(
+          (child) => child.type === 'element' && child.tagName === 'code',
+        );
+        const languageClass =
+          code?.type === 'element' && Array.isArray(code.properties.className)
+            ? code.properties.className.find(
+                (name) =>
+                  typeof name === 'string' && name.startsWith('language-'),
+              )
+            : undefined;
+        const language = String(
+          node.properties.dataLanguage ??
+            node.properties['data-language'] ??
+            (typeof languageClass === 'string'
+              ? languageClass.slice(9)
+              : 'text'),
+        );
+        context.replaceNode(node, {
+          type: 'element',
+          tagName: 'div',
+          properties: { className: ['code-wrapper'] },
+          children: [
+            {
+              type: 'element',
+              tagName: 'div',
+              properties: {
+                className: ['code-header'],
+                'data-pagefind-ignore': true,
+              },
+              children: [
+                {
+                  type: 'element',
+                  tagName: 'span',
+                  properties: { className: ['code-language'] },
+                  children: [
+                    {
+                      type: 'text',
+                      value: languageLabels[language] ?? language,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              ...node,
+              properties: { ...node.properties, tabIndex: 0 },
+            },
+          ],
+        });
       },
     },
   ],

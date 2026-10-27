@@ -1,6 +1,7 @@
 export {};
 
-const themeSelect = document.querySelector<HTMLSelectElement>('#theme-select');
+const themeButtons =
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-value]');
 const systemTheme = matchMedia('(prefers-color-scheme: dark)');
 // Keep the current preference in memory even when storage is unavailable.
 let themePreference =
@@ -14,22 +15,29 @@ function applyTheme() {
       : themePreference;
   document.documentElement.dataset.themePreference = themePreference;
   document.documentElement.dataset.theme = theme;
-  if (themeSelect) themeSelect.value = themePreference;
+  for (const button of themeButtons) {
+    button.setAttribute(
+      'aria-pressed',
+      String(button.dataset.themeValue === themePreference),
+    );
+  }
   document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
     meta.setAttribute('content', theme === 'dark' ? '#171417' : '#ffffff');
     meta.removeAttribute('media');
   });
 }
 applyTheme();
-themeSelect?.addEventListener('change', () => {
-  themePreference = themeSelect.value;
-  applyTheme();
-  try {
-    localStorage.setItem('alg-theme', themePreference);
-  } catch {
-    /* 保存できない環境でも現在のページでは選択を維持 */
-  }
-});
+for (const button of themeButtons) {
+  button.addEventListener('click', () => {
+    themePreference = button.dataset.themeValue ?? 'system';
+    applyTheme();
+    try {
+      localStorage.setItem('alg-theme', themePreference);
+    } catch {
+      /* 保存できない環境でも現在のページでは選択を維持 */
+    }
+  });
+}
 systemTheme.addEventListener('change', () => {
   if (themePreference === 'system') applyTheme();
 });
@@ -72,7 +80,7 @@ document
       if (countLabel) countLabel.textContent = `${count}件の記事`;
     });
   });
-for (const pre of document.querySelectorAll('pre')) {
+for (const pre of document.querySelectorAll('.prose .code-wrapper pre')) {
   pre.setAttribute('tabindex', '0');
   const button = document.createElement('button');
   button.className = 'copy-button';
@@ -91,10 +99,7 @@ for (const pre of document.querySelectorAll('pre')) {
       button.textContent = 'コピー';
     }, 2000);
   });
-  const wrapper = document.createElement('div');
-  wrapper.className = 'code-wrapper';
-  pre.before(wrapper);
-  wrapper.append(pre, button);
+  pre.parentElement?.querySelector('.code-header')?.append(button);
 }
 for (const table of document.querySelectorAll('.prose table')) {
   if (table.parentElement?.classList.contains('table-wrapper')) continue;
