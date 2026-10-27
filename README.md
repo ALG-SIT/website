@@ -59,9 +59,9 @@ BiomeはMDX未対応のため、MDXだけはPrettierで整形し、markdownlint-
 
 ## 開発プレビューと正式公開
 
-初期状態は`src/data/site.ts`の`preview: true`です。サンプルであることをフッターに表示し、robotsとメタタグでインデックス登録を拒否します。これは閲覧制限ではありません。
+`src/data/site.ts`は`preview: false`で、本番の検索掲載を許可します。サンプル記事・プロジェクトは`draft: true`にして本番のHTML・検索・RSS・サイトマップから除外しています。機能ブランチは引き続きrobotsとメタタグで検索を拒否します。これは閲覧制限ではありません。
 
-正式公開前にサンプルを差し替え、連絡先・紹介文・掲載許可を確認し、`preview: false`にします。Cloudflare本番環境では`SITE_RELEASE=1`を設定してください。不備があればビルドの生成物検証が失敗します。
+Cloudflare本番のビルド環境では`SITE_RELEASE=1`を設定してください。不備があれば生成物検証が失敗します。既存の公式GitHubリポジトリを案内していますが、入部・見学用の連絡先や募集条件は確定後に掲載します。
 
 公式リポジトリは[ALG-SIT/website](https://github.com/ALG-SIT/website)です。Cloudflareプロジェクト、DNS、実在するCODEOWNERSは未設定です。サイト公開・保護ルールの適用には管理担当者によるアカウント設定が必要です。
 

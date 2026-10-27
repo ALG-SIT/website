@@ -71,6 +71,8 @@ const breadcrumbs = [
             src={project.data.cover}
             alt={project.data.coverAlt ?? project.data.title}
             width={1200}
+            widths={[400, 800, 1200]}
+            sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 1200px) calc(100vw - 72px), 1168px"
             loading="eager"
           />
         )}

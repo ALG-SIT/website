@@ -31,6 +31,12 @@ test('Static Assetsはセキュリティ・キャッシュヘッダーを適用�
   expect(response.headers()['content-security-policy']).toContain(
     "frame-ancestors 'none'",
   );
+  expect(response.headers()['content-security-policy']).toContain(
+    'https://static.cloudflareinsights.com',
+  );
+  expect(response.headers()['content-security-policy']).toContain(
+    "connect-src 'self' https://cloudflareinsights.com",
+  );
 
   const html = await response.text();
   const asset = html.match(/(?:src|href)="(\/_astro\/[^"]+)"/)?.[1];
@@ -40,6 +46,13 @@ test('Static Assetsはセキュリティ・キャッシュヘッダーを適用�
   expect(cached.headers()['cache-control']).toBe(
     'public, max-age=31536000, immutable',
   );
+  for (const font of html.matchAll(/href="(\/_astro\/alg-jp-[^"]+\.woff2)"/g)) {
+    const response = await request.get(font[1]);
+    expect(response.status()).toBe(200);
+    expect(response.headers()['cache-control']).toBe(
+      'public, max-age=31536000, immutable',
+    );
+  }
   const search = await request.get('/pagefind/pagefind.js');
   expect(search.status()).toBe(200);
   expect(search.headers()['cache-control']).toBe(

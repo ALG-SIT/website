@@ -189,7 +189,7 @@ h3 {
   aspect-ratio: 935 / 329;
   overflow: hidden;
 }
-/* Show source pixels x=280..1215, y=90..419 without modifying either PNG. */
+/* Keep the original crop proportions for responsive wordmark derivatives. */
 .brand-wordmark img {
   position: absolute;
   width: calc(1500 / 935 * 100%);

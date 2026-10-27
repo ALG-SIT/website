@@ -6,6 +6,7 @@ status: planning
 technologies: [Python, GPU, 'Machine Learning']
 authors: [alg]
 featured: true
+draft: true
 ---
 
 > このページはサイト開発用のサンプルです。実在する公開プロジェクトではありません。

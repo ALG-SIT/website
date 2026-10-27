@@ -110,6 +110,15 @@ try {
     join(directory, 'node_modules'),
     process.platform === 'win32' ? 'junction' : 'dir',
   );
+  // node_modulesは共有するが、検証用コンテンツのキャッシュは作業ツリーと分離する。
+  const configPath = join(directory, 'astro.config.mjs');
+  await writeFile(
+    configPath,
+    (await readFile(configPath, 'utf8')).replace(
+      'defineConfig({',
+      "defineConfig({\n  cacheDir: './.astro/cache',",
+    ),
+  );
   for (const fixture of fixtures) {
     await rm(join(directory, '.astro'), { recursive: true, force: true });
     const path = join(directory, 'src/content/blog', fixture.file);
@@ -217,6 +226,13 @@ ${codeFixtures}`,
   }
   console.log('✓ Markdown・MDXの言語名・別名・指定なし・長いコードを静的生成');
 
+  // 現在の本番設定に依存せず、プレビューの公開拒否を検証する。
+  const sitePath = join(directory, 'src/data/site.ts');
+  const siteSource = await readFile(sitePath, 'utf8');
+  await writeFile(
+    sitePath,
+    siteSource.replace('preview: false', 'preview: true'),
+  );
   const release = Bun.spawn([process.execPath, 'scripts/verify-output.ts'], {
     cwd: directory,
     env: { ...process.env, SITE_RELEASE: '1', WORKERS_CI_BRANCH: 'main' },
@@ -230,7 +246,8 @@ ${codeFixtures}`,
   ]);
   if (releaseCode === 0 || !(releaseOut + releaseErr).includes('正式公開'))
     throw new Error('開発プレビューの正式公開を拒否できませんでした');
-  console.log('✓ サンプル状態では正式公開の検証に失敗する');
+  console.log('✓ プレビュー設定では正式公開の検証に失敗する');
+  await writeFile(sitePath, siteSource);
 
   for (const collection of ['blog', 'projects']) {
     for (const filename of await readdir(
@@ -276,13 +293,12 @@ ${codeFixtures}`,
   console.log(
     '✓ 記事・プロジェクトが0件でもビルドでき、固定ページは検索対象にならない',
   );
-  // 検索公開の検証は一時コピーだけで行い、作業ツリーのpreviewは変更しない。
-  const sitePath = join(directory, 'src/data/site.ts');
-  const siteSource = await readFile(sitePath, 'utf8');
+  // 検索公開の検証は一時コピーだけで行う。
   await writeFile(
     sitePath,
     siteSource
       .replace('preview: true', 'preview: false')
+      .replace(/github: '[^']*'/, "github: ''")
       .replace(
         'social: [] as',
         "social: [{ label: '検証用SNS', url: 'https://example.com/alg' }] as",

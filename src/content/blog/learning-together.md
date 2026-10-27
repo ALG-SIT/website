@@ -6,6 +6,7 @@ publishedAt: 2026-10-24
 authors: [alg]
 category: activity
 tags: [community, ai]
+draft: true
 ---
 
 > この記事はサイト開発用のサンプルです。実施済みの活動報告ではありません。
