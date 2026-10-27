@@ -2,51 +2,108 @@
 import Icon from '../components/Icon.astro';
 import PageHeading from '../components/PageHeading.astro';
 import Base from '../layouts/Base.astro';
+import { publishedProjects } from '../lib/content';
+
+const hasLumin = (await publishedProjects()).some(
+  (project) => project.id === 'lumin',
+);
 ---
 
 <Base
   title="ALGについて"
-  description="Ai Love GPU（ALG）は、AIやGPUをはじめとする技術を学び、試し、共有するサークルです。"
+  description="芝浦工業大学の学生団体ALG（AI Love GPU）の活動目的、活動実績、今後の計画と運営体制を紹介します。"
 >
   <div class="container page-content">
     <PageHeading
       eyebrow="ABOUT AI LOVE GPU"
       title="好奇心で、つながる。"
-      description="AIを学ぶ。GPUで試す。つくって、共有する。Ai Love GPU、略してALGです。"
+      description="AIを学び、作り、動かす。計算資源と知識を共有する、芝浦工業大学の学生団体です。"
     />
     <div class="prose narrow">
-      <h2 id="our-purpose">私たちが大切にすること</h2>
+      <h2 id="our-purpose">計算資源と知識を、学生の手で共有する</h2>
       <p>
-        知らない技術に出会ったときの「おもしろそう」を、実際に手を動かすきっかけに。ALGは、AIやGPUをはじめとする技術に関心を持つ仲間が、学びやアイデアを共有するサークルです。
+        ALG（AI Love
+        GPU）は、2026年4月12日に結成した芝浦工業大学の学生団体です。AIと機械学習を学び、作り、使うために必要な計算資源・開発力・理解を、学生が共同で身につけることを目的としています。
       </p>
       <p>
-        完成した成果だけでなく、試行錯誤の過程にも価値があると考えています。実験して、記録して、誰かに伝える。その積み重ねを、このサイトから発信します。
+        個人ではそろえにくい計算資源と知識を共有し、開発を続けられる場をつくります。
       </p>
-      <h2 id="activities">取り組むこと</h2>
+      <h2 id="activities">ALGの3つの活動</h2>
+      <h3>共有GPU資源の運用</h3>
+      <p>
+        AI・機械学習の研究開発に必要なGPU資源を、団体で使える基盤として構築・運用します。機材の選定から保守までを学生が担い、将来は学内の学生が使える計算基盤への発展を目指します。
+      </p>
+      <h3>AI駆動開発の場づくり</h3>
+      <p>
+        Discordで情報や開発の知見を共有し、個人開発やコンペティションでのチーム開発を続けられる場をつくります。ワークショップで工夫を学び合い、LT会や展示会で作品を発表し、大宮祭への出展も計画しています。
+      </p>
+      <h3>勉強会とセミナー</h3>
+      <p>
+        AIを使いこなす力を、基礎となる数学と理論から身につけます。入門から専門的な内容まで段階を分け、それぞれの関心や理解に合わせて学びを深める場をつくります。
+      </p>
+      <h2 id="history">これまでの活動</h2>
       <ul>
         <li>
-          <strong>学ぶ：</strong>
-          機械学習、GPU、プログラミングなど、関心のある分野を調べる。
+          <strong>2026年4月：</strong
+          >4月12日に結成し、GPUサーバーの構成検討を開始。
         </li>
         <li>
-          <strong>つくる：</strong>
-          小さなコードやデモから、アイデアをかたちにする。
+          <strong>5月：</strong
+          >メンバー間でサーバーを貸し借りし、試験運用を実施。
         </li>
         <li>
-          <strong>共有する：</strong>
-          技術記事や活動報告を通じて、発見や課題をひらく。
+          <strong>6月：</strong
+          >AIを使った開発へ活動を拡大。6月8日に対面会議を開催。
+        </li>
+        <li>
+          <strong>7月：</strong>7月28日の会議で、AI Innovators
+          Cupのテーマと担当、団体名、役割分担を議論。
+        </li>
+        <li>
+          <strong>8月：</strong
+          >4人で応募書類・ポスター・動画を制作し、8月31日にAI Innovators
+          Cupへ応募。
+        </li>
+        <li>
+          <strong>9月：</strong
+          >勉強会・セミナーの題材を議論。9月27日のSBMC最終発表会で、メンバーのチーム「Luminous
+          Studying」が提案した{hasLumin ? (
+            <a href="/projects/lumin/">Lumin</a>
+          ) : (
+            'Lumin'
+          )}が、ビジネスアイデア部門の銅賞を受賞。
+        </li>
+        <li>
+          <strong>10月：</strong
+          >10月13日の定例会で、発表会とGPUサーバーの運用について議論。
         </li>
       </ul>
-      <div class="info-panel">
-        <h2>活動情報について</h2>
-        <p>
-          活動日時・場所・参加対象などの正式な案内は準備中です。確定した情報は入部案内に掲載します。
-        </p>
-      </div>
-      <h2 id="open-knowledge">学びを、次の人へ</h2>
+      <h2 id="plans">今後の計画</h2>
+      <ol>
+        <li>
+          <strong>当面：</strong
+          >メンバーがアクセスできるGPUサーバーの構築と運用開始、ハッカソンやコンペティションへのチーム参加、数学と機械学習の入門勉強会の開始。
+        </li>
+        <li>
+          <strong>定着：</strong
+          >AI駆動開発のワークショップとLT会の継続、大宮祭での作品展示。
+        </li>
+        <li>
+          <strong>長期：</strong
+          >計算基盤の学内展開、入門から専門まで学べる場の充実、作品公開や学外コンペティションを通じた成果の発信。
+        </li>
+      </ol>
+      <h2 id="organization">運営体制</h2>
       <p>
-        記事やプロジェクトはGitHubで管理します。部員が書き、レビューし、公開する仕組みを通して、活動の知識を次の担当者へ引き継ぎます。
+        月2回の定例会で、活動の進み具合と次の計画を確認します。幹部が活動の方針を決め、定例会でメンバーと確認する体制です。
       </p>
+      <ul>
+        <li><strong>共同代表：</strong>丸岡 勇也 ／ 古市 悠 ／ 井上 陽</li>
+        <li>
+          <strong>幹部：</strong>共同代表3名と、皆川 友希・佐藤 柊斗の計5名
+        </li>
+      </ul>
+      <p>掲載内容は2026年10月の活動計画書に基づきます。</p>
     </div>
     <div class="hero-buttons" style="margin-top: 35px">
       <a href="/join/" class="button button-primary">
