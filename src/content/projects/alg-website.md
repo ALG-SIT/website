@@ -6,6 +6,7 @@ status: active
 technologies: [Astro, TypeScript, Tailwind CSS]
 authors: [alg]
 featured: true
+draft: true
 ---
 
 > このページは開発中のサイト紹介サンプルです。正式公開前に内容を確認します。

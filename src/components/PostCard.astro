@@ -27,11 +27,13 @@ const authors = await resolveAuthors(post.data.authors);
         alt=""
         width={720}
         height={400}
+        widths={[360, 540, 720]}
+        sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 1000px) calc((100vw - 72px) / 2), 370px"
         loading="lazy"
       />
     ) : (
       <>
-        <span class="visual-index">
+        <span class="visual-index" aria-hidden="true">
           ALG / NOTES_{String(index + 1).padStart(2, '0')}
         </span>
         <Icon
@@ -44,7 +46,7 @@ const authors = await resolveAuthors(post.data.authors);
           }
           size={72}
         />
-        <span class="visual-label">
+        <span class="visual-label" aria-hidden="true">
           {post.data.category === 'tech'
             ? 'EXPERIMENT. LEARN. REPEAT.'
             : post.data.category === 'activity'

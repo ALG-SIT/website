@@ -7,6 +7,7 @@ authors: [alg]
 category: tech
 tags: [gpu, ai, python]
 featured: true
+draft: true
 ---
 
 > この記事はサイト開発用のサンプルです。ALGの実際の活動実績を示すものではありません。

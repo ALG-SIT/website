@@ -1,16 +1,26 @@
+---
+import { Image } from 'astro:assets';
+import darkWordmark from '../../public/brand-wordmark-dark.png';
+import lightWordmark from '../../public/brand-wordmark-light.png';
+---
+
 <span class="brand-wordmark" aria-hidden="true">
-  <img
+  <Image
     class="brand-wordmark-light"
-    src="/brand-wordmark-light.png"
-    width="1500"
-    height="500"
+    src={lightWordmark}
+    width={540}
+    widths={[270, 540]}
+    sizes="(max-width: 600px) 190px, 270px"
+    loading="eager"
     alt=""
-  >
-  <img
+  />
+  <Image
     class="brand-wordmark-dark"
-    src="/brand-wordmark-dark.png"
-    width="1500"
-    height="500"
+    src={darkWordmark}
+    width={540}
+    widths={[270, 540]}
+    sizes="(max-width: 600px) 190px, 270px"
+    loading="eager"
     alt=""
-  >
+  />
 </span>

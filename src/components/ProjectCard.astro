@@ -24,14 +24,16 @@ const { project, index = 0 } = Astro.props;
         alt=""
         width={800}
         height={400}
+        widths={[400, 600, 800]}
+        sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 1000px) calc((100vw - 72px) / 2), 370px"
         loading="lazy"
       />
     ) : (
       <>
-        <span class="visual-index">
+        <span class="visual-index" aria-hidden="true">
           PROJECT / {String(index + 1).padStart(2, '0')}
         </span>
-        <div class="terminal-art">
+        <div class="terminal-art" aria-hidden="true">
           <span>
             <i></i>
             <i></i>

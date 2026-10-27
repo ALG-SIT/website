@@ -40,8 +40,10 @@ const canonical = new URL(
 ).href;
 const pageTitle = title
   ? `${title} | ${site.name}`
-  : `${site.name} — 好奇心を、動かそう。`;
-const preview = isPreview(site.preview, import.meta.env.WORKERS_CI_BRANCH);
+  : `${site.shortName}（${site.name}）｜芝浦工業大学のAI・GPU学生団体`;
+const preview =
+  import.meta.env.DEV ||
+  isPreview(site.preview, import.meta.env.WORKERS_CI_BRANCH);
 const structured = [
   organization(),
   ...(Astro.url.pathname === '/'
@@ -299,9 +301,9 @@ const structured = [
             BUILT WITH CURIOSITY <span class="footer-plus">+</span> ASTRO
           </span>
         </div>
-        {site.preview && (
+        {preview && (
           <p class="preview-note">
-            このサイトは開発プレビューです。記事・活動内容にはサンプルが含まれます。
+            このサイトは開発プレビューです。掲載内容は正式公開前に確認してください。
           </p>
         )}
       </div>

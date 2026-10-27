@@ -3,7 +3,7 @@ import PageHeading from '../components/PageHeading.astro';
 import { site } from '../data/site';
 import Base from '../layouts/Base.astro';
 
-const hasContact = site.github || site.contactEmail || site.social.length;
+const hasContact = site.contactEmail || site.social.length;
 ---
 
 <Base title="連絡先・SNS" description="ALGの公式連絡先・SNSのご案内。">
@@ -16,9 +16,9 @@ const hasContact = site.github || site.contactEmail || site.social.length;
     <div class="narrow">
       {!hasContact && (
         <div class="info-panel">
-          <h2>公式窓口を準備しています</h2>
+          <h2>入部・見学の窓口を準備しています</h2>
           <p>
-            連絡先と公式SNSは、管理担当者による確認後に掲載します。未確認のアカウントや仮のメールアドレスへのご連絡は不要です。
+            募集用の連絡先と公式SNSは、管理担当者による確認後に掲載します。下記のGitHubはソースコードの公開先です。
           </p>
         </div>
       )}
@@ -48,9 +48,7 @@ const hasContact = site.github || site.contactEmail || site.social.length;
           参加条件や募集状況は<a href="/join/">入部案内</a>でご確認ください。
         </p>
         <h2>記事の訂正について</h2>
-        <p>
-          記事や掲載内容に誤りがあった場合は、公開後の公式窓口へ、対象ページのURLと該当箇所をお知らせください。
-        </p>
+        <p>記事や掲載内容の訂正窓口は、決まり次第このページで案内します。</p>
         <p>このサイトには問い合わせフォームを設置していません。</p>
       </div>
     </div>

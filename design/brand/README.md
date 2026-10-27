@@ -19,7 +19,7 @@
 
 ## 使用する素材
 
-- `src/components/BrandWordmark.astro`：提供された透過PNGをそのまま表示。`public/brand-wordmark-light.png`・`brand-wordmark-dark.png`をテーマに応じて切り替えます。画像の再描画・再圧縮・色変更はせず、外周余白だけをCSSで調整します。
+- `src/components/BrandWordmark.astro`：`public/brand-wordmark-light.png`・`brand-wordmark-dark.png`から、Astroで表示サイズに応じたWebPを生成してテーマ別に表示します。原本PNGを維持し、外周余白の切り取り比率と配色を保ちます。派生画像はハッシュ付きURLで長期キャッシュします。
 - `src/components/BrandSquare.astro`：正方形ロゴの透明なインラインSVG。文字色はサイトのテーマに追従します。
 - `public/brand-square.svg`：正方形ロゴの単独配布用の透明SVG。OSのテーマに追従し、構造化データからも参照します。
 - `public/favicon.svg`：ブラウザタブ用のハートアイコン。favicon派生画像の原本。
