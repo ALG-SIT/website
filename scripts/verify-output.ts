@@ -163,6 +163,10 @@ for (const [path, $] of cache) {
   descriptions.add(description ?? '');
   assert($('html').attr('lang') === 'ja', `langがjaではありません: ${name}`);
   assert($('h1').length === 1, `h1はページに1個必要です: ${name}`);
+  assert(
+    $('link[rel="stylesheet"]').length === 0,
+    `外部スタイルシートが残っています: ${name}`,
+  );
   for (const url of fontUrls) {
     assert(
       url &&

@@ -10,6 +10,7 @@ export default defineConfig({
   site: site.url,
   output: 'static',
   trailingSlash: 'always',
+  build: { inlineStylesheets: 'always' },
   // カバーはリポジトリ内のレビュー済み素材のみ。共有用PNGへの変換を許可する。
   image: { dangerouslyProcessSVG: true },
   integrations: [
