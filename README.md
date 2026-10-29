@@ -1,4 +1,8 @@
-# Ai Love GPU — Official Website
+# AI Love GPU — Official Website
+
+[![Quality](https://github.com/ALG-SIT/website/actions/workflows/ci.yml/badge.svg)](https://github.com/ALG-SIT/website/actions/workflows/ci.yml)
+
+**公開サイト：[alg-sit.club](https://alg-sit.club/)**
 
 ALGの紹介・技術記事・活動報告・プロジェクトを公開する静的サイトです。仕様は[技術仕様書](docs/spec.md)、実装時の決定は[実装メモ](docs/IMPLEMENTATION.md)を参照してください。
 
@@ -57,13 +61,13 @@ BiomeはMDX未対応のため、MDXだけはPrettierで整形し、markdownlint-
 - `public/`：公開用ロゴ、favicon、標準OGP画像、Cloudflare配信設定
 - `design/brand/originals/`：公開しないロゴ原本。[素材の管理](design/brand/README.md)を参照
 
-## 開発プレビューと正式公開
+## 公開状況と開発プレビュー
 
 `src/data/site.ts`は`preview: false`で、本番の検索掲載を許可します。サンプル記事・プロジェクトは`draft: true`にして本番のHTML・検索・RSS・サイトマップから除外しています。機能ブランチは引き続きrobotsとメタタグで検索を拒否します。これは閲覧制限ではありません。
 
 Cloudflare本番のビルド環境では`SITE_RELEASE=1`を設定してください。不備があれば生成物検証が失敗します。既存の公式GitHubリポジトリを案内していますが、入部・見学用の連絡先や募集条件は確定後に掲載します。
 
-公式リポジトリは[ALG-SIT/website](https://github.com/ALG-SIT/website)です。Cloudflareプロジェクト、DNS、実在するCODEOWNERSは未設定です。サイト公開・保護ルールの適用には管理担当者によるアカウント設定が必要です。
+公式リポジトリは[ALG-SIT/website](https://github.com/ALG-SIT/website)です。サイトはCloudflareで独自ドメイン公開中です。`.github/CODEOWNERS`はコメントのみで、レビュー担当は未設定です。ブランチ保護やCloudflareの管理画面上の設定は管理担当者が確認してください。
 
 ## 運用文書
 
