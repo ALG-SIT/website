@@ -77,15 +77,6 @@ const expected = [
 ];
 for (const path of expected)
   assert(files.includes(join(root, path)), `必要な成果物がありません: ${path}`);
-const fontUrls = [400, 700].map((weight) => {
-  const fonts = files.filter((file) =>
-    new RegExp(`/_astro/alg-jp-${weight}\\.[a-f0-9]{16}\\.woff2$`).test(
-      file.replaceAll('\\', '/'),
-    ),
-  );
-  assert(fonts.length === 1, `ハッシュ付きフォントが不正: ${weight}`);
-  return fonts[0]?.slice(root.length).replaceAll('\\', '/');
-});
 const preview = isPreview(site.preview, process.env.WORKERS_CI_BRANCH);
 const robots = await readFile(join(root, 'robots.txt'), 'utf8');
 assert(
@@ -167,12 +158,16 @@ for (const [path, $] of cache) {
     $('link[rel="stylesheet"]').length === 0,
     `外部スタイルシートが残っています: ${name}`,
   );
+  const fontUrls = [
+    ...$('style')
+      .text()
+      .matchAll(/\/_astro\/fonts\/[a-f0-9]+\.woff2/g),
+  ].map((match) => match[0]);
+  assert(new Set(fontUrls).size === 2, `フォント参照が不正: ${name}`);
   for (const url of fontUrls) {
     assert(
-      url &&
-        $(`link[rel="preload"][as="font"][href="${url}"]`).length === 1 &&
-        $('style').text().includes(url),
-      `フォントの先読みとCSS参照が不一致: ${name}`,
+      files.includes(join(root, url)),
+      `フォントの参照先がありません: ${name} → ${url}`,
     );
   }
   const canonical = $('link[rel="canonical"]').attr('href');
