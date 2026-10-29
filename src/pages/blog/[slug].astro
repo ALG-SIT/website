@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ContentImage from '../../components/ContentImage.astro';
 import PostCard from '../../components/PostCard.astro';
 import { site } from '../../data/site';
 import { categories, tags } from '../../data/tags';
@@ -87,14 +88,11 @@ const structured = {
           ))}
         </div>
         {post.data.cover && (
-          <Image
+          <ContentImage
             class="article-cover"
             src={post.data.cover}
             alt={post.data.coverAlt ?? post.data.title}
-            width={1200}
-            widths={[400, 800, 1200]}
-            sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 1200px) calc(100vw - 72px), 1168px"
-            loading="eager"
+            kind="cover"
           />
         )}
       </header>
