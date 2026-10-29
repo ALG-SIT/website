@@ -28,7 +28,7 @@
 
 ## 外部設定が必要な項目
 
-GitHub remote・CODEOWNERSの実在チーム・ブランチ保護・Cloudflare Workers + Static Assets・DNSはリポジトリだけでは確定できません。[デプロイ手順](DEPLOYMENT.md)に従って管理担当者が設定します。
+GitHub remoteは`ALG-SIT/website`で、サイトは`https://alg-sit.club/`に公開済みです。CODEOWNERSの実在チームは未設定です。ブランチ保護・Cloudflare Workers Builds・DNSの管理画面上の設定はリポジトリだけでは確定できません。[デプロイ手順](DEPLOYMENT.md)に従って管理担当者が設定します。
 
 ## SEOと検索公開
 

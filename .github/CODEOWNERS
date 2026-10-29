@@ -1,4 +1,4 @@
-# 公開前に実在するチーム名へ置換して、以下の行を有効にしてください。
+# レビュー担当の設定時に実在するチーム名へ置換して、以下の行を有効にしてください。
 # Organizationのチームにはリポジトリのwrite権限が必要です。
 # * @YOUR_ORG/web-maintainers
 # /src/content/ @YOUR_ORG/content-editors

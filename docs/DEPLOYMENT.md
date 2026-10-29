@@ -1,12 +1,16 @@
 # Cloudflare Workers + Static Assetsへの公開
 
+## 現在の公開状況
+
+公式サイトは[https://alg-sit.club/](https://alg-sit.club/)で公開中です。正規URLと`preview: false`は`src/data/site.ts`で管理しています。以下の初期設定手順は再構築・引き継ぎ用です。管理画面の設定値は実環境で確認してください。
+
 ## 前提
 
 GitHub OrganizationとCloudflare・DNSの管理権限が必要です。ローカルのサイト実装とは別に、管理責任者が次の設定を行います。秘密情報をリポジトリへ書き込まないでください。
 
 ## GitHub
 
-1. Organizationに`website`リポジトリを作成し、既存のローカル履歴を接続・Pushします。
+1. 既存の[ALG-SIT/website](https://github.com/ALG-SIT/website)を使用します。再構築時はリモートと履歴を確認します。
 2. `.github/CODEOWNERS`の例を実在するチーム名に置換し、有効化します。
 3. `main`のルールセットで直接Pushを制限し、PR・1名以上の承認・Code Owner承認・`Quality checks`の成功を必須にします。
 4. 管理者のバイパスも運用方針に沿って制限します。
@@ -40,7 +44,7 @@ Workersを新規作成し、Workers BuildsでGitHubリポジトリを接続し�
 
 `WORKERS_CI_BRANCH`はWorkers Buildsが設定する値を使用し、手動で固定しません。`build:cloudflare`はこの値が空なら失敗します。main以外では子プロセスの`SITE_RELEASE`を`0`にしてビルドし、HTMLにnoindex・nofollow、robotsに全拒否を付けます。
 
-正式公開の準備が完了したらビルド環境変数に`SITE_RELEASE=1`を設定します。mainでは公開検証を実行し、機能ブランチでは同じ変数が渡されても公開検証を無効にしてプレビューを生成します。`site.preview: true`の間は本番も検索拒否になります。プレビューは閲覧制限ではありません。
+本番の公開検証を有効にするにはビルド環境変数に`SITE_RELEASE=1`を設定します。mainでは公開検証を実行し、機能ブランチでは同じ変数が渡されても公開検証を無効にしてプレビューを生成します。`site.preview: true`の間は本番も検索拒否になります。プレビューは閲覧制限ではありません。
 
 ローカルでは`bun run build`後に`bun run preview:cloudflare`を実行し、`http://localhost:8787/`で配信を確認します。`bun run preview`はAstroによる表示確認用です。`bun run deploy`は既存の`dist/`を本番へ公開するため、手動公開でも必ず先に対象ブランチと環境変数を設定して`build:cloudflare`を成功させてください。通常の公開はWorkers Buildsに任せます。
 
@@ -56,7 +60,7 @@ Workersを新規作成し、Workers BuildsでGitHubリポジトリを接続し�
 
 公開検証はプレビュー設定・連絡先未設定・既知のサンプルを検出します。活動文章の正確性・掲載許可は担当者が確認します。
 
-## 初回公開とドメイン
+## ドメイン設定・再構築時の確認
 
 1. `alg-sit.club`のネームサーバーがCloudflareで管理されていることを確認します。Workers Custom Domainsの前提です。
 2. Workers Buildsを設定し、WorkersのURLで表示、日本語検索、RSS、サイトマップ、セキュリティヘッダー、404、末尾スラッシュ転送を確認します。
