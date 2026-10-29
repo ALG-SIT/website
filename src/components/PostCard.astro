@@ -1,9 +1,9 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import { categories, tags } from '../data/tags';
 import { resolveAuthors } from '../lib/content';
 import { formatDate } from '../lib/publishing';
+import ContentImage from './ContentImage.astro';
 import Icon from './Icon.astro';
 
 interface Props {
@@ -22,15 +22,7 @@ const authors = await resolveAuthors(post.data.authors);
     aria-label={post.data.title}
   >
     {post.data.cover ? (
-      <Image
-        src={post.data.cover}
-        alt=""
-        width={720}
-        height={400}
-        widths={[360, 540, 720]}
-        sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 1000px) calc((100vw - 72px) / 2), 370px"
-        loading="lazy"
-      />
+      <ContentImage src={post.data.cover} alt="" kind="post-card" />
     ) : (
       <>
         <span class="visual-index" aria-hidden="true">

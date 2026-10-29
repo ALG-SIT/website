@@ -1,9 +1,13 @@
-import { createHash } from 'node:crypto';
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { load } from 'cheerio';
 import subsetFont from 'subset-font';
 
+if (process.argv.includes('--clean-legacy')) {
+  for (const weight of [400, 700])
+    await rm(join('dist/fonts', `alg-jp-${weight}.woff2`), { force: true });
+  process.exit(0);
+}
 const built = process.argv.includes('--built');
 async function filesIn(directory) {
   return (
@@ -33,9 +37,8 @@ for (const file of sources) {
 // 遅延表示する検索・エラー表示などのUI文字列も含める。非公開記事本文は読み込まない。
 if (built) text += await readFile('src/lib/browser.ts', 'utf8');
 const characters = [...new Set([...text])].sort().join('');
-const destination = built ? 'dist/_astro' : 'public/fonts';
+const destination = '.font-trial';
 await mkdir(destination, { recursive: true });
-const replacements = new Map();
 for (const weight of [400, 700]) {
   const font = await readFile(
     resolve(
@@ -44,23 +47,9 @@ for (const weight of [400, 700]) {
   );
   const subset = await subsetFont(font, characters, { targetFormat: 'woff2' });
   const name = `alg-jp-${weight}`;
-  const hash = createHash('sha256').update(subset).digest('hex').slice(0, 16);
-  const filename = built ? `${name}.${hash}.woff2` : `${name}.woff2`;
+  const filename = `${name}.woff2`;
   await writeFile(join(destination, filename), subset);
-  if (built) {
-    replacements.set(`/fonts/${name}.woff2`, `/_astro/${filename}`);
-    // 開発用の固定名フォントを本番へ残さない。
-    await rm(join('dist/fonts', `${name}.woff2`), { force: true });
-  }
   console.log(
     `日本語フォント${weight}: ${Math.round(subset.length / 1024)} KiB (${characters.length}文字)`,
   );
-}
-if (built) {
-  for (const file of sources) {
-    let html = await readFile(file, 'utf8');
-    for (const [source, target] of replacements)
-      html = html.replaceAll(source, target);
-    await writeFile(file, html);
-  }
 }
