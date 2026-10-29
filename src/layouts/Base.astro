@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { Font } from 'astro:assets';
 import BrandWordmark from '../components/BrandWordmark.astro';
 import Icon from '../components/Icon.astro';
 import { navigation, site } from '../data/site';
@@ -67,36 +68,7 @@ const structured = [
 <html lang="ja">
   <head>
     <meta charset="UTF-8">
-    <link
-      rel="preload"
-      href="/fonts/alg-jp-400.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    >
-    <link
-      rel="preload"
-      href="/fonts/alg-jp-700.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    >
-    <style is:inline>
-    @font-face {
-      font-family: "ALG Sans";
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url("/fonts/alg-jp-400.woff2") format("woff2");
-    }
-    @font-face {
-      font-family: "ALG Sans";
-      font-style: normal;
-      font-weight: 700;
-      font-display: swap;
-      src: url("/fonts/alg-jp-700.woff2") format("woff2");
-    }
-    </style>
+    <Font cssVariable="--font-alg" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{pageTitle}</title>
     <meta name="description" content={description}>

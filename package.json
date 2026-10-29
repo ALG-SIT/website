@@ -9,9 +9,9 @@
   },
   "scripts": {
     "dev": "bun run fonts:dev && astro dev --host 0.0.0.0",
-    "build": "bun run validate:content && astro build && bun run fonts:build && bun run search:build && bun run verify",
+    "build": "bun run validate:content && bun run fonts:dev && astro build && bun run fonts:build && astro build && bun run search:build && bun run verify",
     "preview": "astro preview --host 0.0.0.0",
-    "check": "bun run validate:content && astro check",
+    "check": "bun run validate:content && bun run fonts:dev && astro check",
     "lint": "biome check --error-on-warnings . && markdownlint-cli2 && bun run format:mdx:check",
     "format": "biome format --write . && bun run format:mdx",
     "format:check": "biome format . && bun run format:mdx:check",

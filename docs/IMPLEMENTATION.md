@@ -5,7 +5,7 @@
 - 品質管理：Biome 2.6.3をLinter・Formatterとして使用。Astroの全文処理は実験的機能を明示的に有効化。MDXのみPrettier・markdownlint-cli2で補完し、Astro用Prettierプラグインは使用しない。
 - CSSルール：共通CSSの`noDescendingSpecificity`は独立したコンポーネント間の誤検出を避けるため無効。`noImportantStyles`もShikiのインライン配色の上書き、hidden属性、動きを抑える設定を維持するため同ファイルだけ無効。ほかの推奨ルールは有効。
 - CSS配信：初回描画時のCSS取得待ちを減らすため、AstroでスタイルをHTMLへインライン化する。HTMLは圧縮後約8KB増え、共通CSSをページ間で個別にキャッシュできなくなるため、初回表示とキャッシュ済み遷移を比較する。
-- フォント：Noto Sans JPを同一オリジンで配信。公開HTMLとUIで使用する文字だけをビルド時に抽出し、400・700の2ファイルに縮小し、内容のハッシュ付きURLで長期キャッシュ。外部フォントサービスへの通信は行わない。ライセンスは`public/fonts/OFL.txt`。
+- フォント：Noto Sans JPを同一オリジンで配信。公開HTMLとUIで使用する文字だけをビルド時に抽出し、400・700の2ファイルに縮小。Astro Fonts APIのローカルプロバイダーで内容のハッシュ付きURLを生成し、長期キャッシュ。外部フォントサービスへの通信は行わない。ライセンスは`public/fonts/OFL.txt`。
 - デザイン：ライトは白基調、ダークは暗いニュートラル。ピンクを主ボタン・強調に、グリーンを補助リンク・アイコンに使用。ブランド色はピンク`#D4537E`とグリーン`#19ADA5`、文字にはコントラストを確保した濃淡を使用。
 - テーマ：ヘッダーの太陽（ライト）・月（ダーク）・モニター（OS設定に従う）のアイコンボタンで選択。選択状態は背景・枠線とaria-pressedで示す。初期値はOS追従。`alg-theme`に`system`・`light`・`dark`を保存し、既存の手動選択も引き継ぐ。保存不可時はページ内で選択を維持。JavaScript無効時はCSSでOS追従。
 - ロゴ：提供された原本は公開対象外の`design/brand/originals/`に保持。横長ワードマークは指定フォントを維持するため、黒文字PNG（`412f4846578586c9.png`）と白文字PNG（`0de622ab9b2d421a.png`）を加工せず`public/brand-wordmark-light.png`・`brand-wordmark-dark.png`へ複製。`BrandWordmark`では原本から画面幅に応じたWebP派生画像を生成してテーマ別に表示し、外周余白は従来の比率でCSS調整。JavaScript無効時もOSに追従。旧公開ワードマークSVGは廃止。正方形は原本JPGの輪郭をパス化した透明SVGで、`BrandSquare`内の文字は`currentColor`、説明文は`--muted`でテーマに追従。ハートと下線は固有色を維持し、ロゴに白い背景・外枠・影を付けない。配布用の`public/brand-square.svg`はOS設定に追従し、構造化データからも参照。原本SVGは書き出し時のスタイルを保つためBiomeの対象外。faviconは透明背景のハート、OGPは白背景の1200×630px。OGPの編集元は`src/assets/og-source.svg`で、PNGはSharpで書き出す。

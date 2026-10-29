@@ -11,3 +11,5 @@ coverage/
 artifacts/
 public/fonts/alg-jp-*.woff2
 .wrangler/
+
+.font-trial/

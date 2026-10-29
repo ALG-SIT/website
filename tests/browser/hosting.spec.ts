@@ -46,8 +46,16 @@ test('Static Assetsはセキュリティ・キャッシュヘッダーを適用�
   expect(cached.headers()['cache-control']).toBe(
     'public, max-age=31536000, immutable',
   );
-  for (const font of html.matchAll(/href="(\/_astro\/alg-jp-[^"]+\.woff2)"/g)) {
-    const response = await request.get(font[1]);
+  const fontUrls = [
+    ...new Set(
+      [...html.matchAll(/\/_astro\/fonts\/[a-f0-9]+\.woff2/g)].map(
+        (match) => match[0],
+      ),
+    ),
+  ];
+  expect(fontUrls).toHaveLength(2);
+  for (const font of fontUrls) {
+    const response = await request.get(font);
     expect(response.status()).toBe(200);
     expect(response.headers()['cache-control']).toBe(
       'public, max-age=31536000, immutable',
