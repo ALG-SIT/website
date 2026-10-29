@@ -1,8 +1,13 @@
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { load } from 'cheerio';
 import subsetFont from 'subset-font';
 
+if (process.argv.includes('--clean-legacy')) {
+  for (const weight of [400, 700])
+    await rm(join('dist/fonts', `alg-jp-${weight}.woff2`), { force: true });
+  process.exit(0);
+}
 const built = process.argv.includes('--built');
 async function filesIn(directory) {
   return (
