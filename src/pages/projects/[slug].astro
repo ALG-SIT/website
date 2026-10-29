@@ -1,7 +1,7 @@
 ---
-import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ContentImage from '../../components/ContentImage.astro';
 import { statuses } from '../../data/tags';
 import Base from '../../layouts/Base.astro';
 import { publishedProjects, resolveAuthors } from '../../lib/content';
@@ -66,14 +66,11 @@ const breadcrumbs = [
           </p>
         )}
         {project.data.cover && (
-          <Image
+          <ContentImage
             class="article-cover"
             src={project.data.cover}
             alt={project.data.coverAlt ?? project.data.title}
-            width={1200}
-            widths={[400, 800, 1200]}
-            sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 1200px) calc(100vw - 72px), 1168px"
-            loading="eager"
+            kind="cover"
           />
         )}
       </header>
