@@ -106,7 +106,7 @@ const activities = [
       計算資源・開発力・理論の理解を共同で身につける団体です。
     </p>
     <div
-      class="grid grid-cols-3 gap-5 max-[767px]:grid-cols-1 max-[767px]:gap-5"
+      class="grid grid-cols-3 gap-5 max-[1023px]:gap-[15px] max-[767px]:grid-cols-1 max-[767px]:gap-5"
     >
       {activities.map((activity) => (
         <article class="activity-card">
@@ -248,11 +248,24 @@ const activities = [
   letter-spacing: 0.13em;
 }
 
+.hero-scroll > span:last-child {
+  display: flex;
+  gap: 16px;
+}
+
 .activity-card {
   padding: 26px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
+}
+
+.activity-english {
+  margin-bottom: 9px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
 }
 
 .home-join-panel {
@@ -377,8 +390,23 @@ const activities = [
     font-size: 7px;
   }
 
+  .hero-scroll > span:first-child {
+    max-width: 155px;
+    line-height: 1.9;
+  }
+
+  .hero-scroll > span:last-child {
+    align-items: center;
+    gap: 8px;
+    font-size: 7px;
+  }
+
   .activity-card {
     padding: 25px;
+  }
+
+  .activity-card h3 {
+    font-size: 19px;
   }
 
   .home-join-panel {
@@ -394,6 +422,10 @@ const activities = [
     margin-bottom: 25px;
   }
 
+  .section-heading-row h2 {
+    font-size: 23px;
+  }
+
   .section-more {
     padding-bottom: 0;
   }
@@ -403,6 +435,7 @@ const activities = [
     max-width: 330px;
     justify-self: center;
     margin-top: 35px;
+    margin-bottom: 20px;
   }
 }
 </style>

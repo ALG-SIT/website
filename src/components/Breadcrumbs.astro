@@ -8,7 +8,7 @@ const { items } = Astro.props;
 ---
 
 <nav
-  class="breadcrumbs mb-10 flex flex-wrap gap-[13px] text-[11px] text-[var(--muted)]"
+  class="breadcrumbs mb-10 flex flex-wrap gap-[13px] text-[11px] text-[var(--muted)] max-[767px]:mb-[25px] max-[767px]:text-[10px]"
   aria-label="パンくず"
 >
   {items.map((item, index) => (
