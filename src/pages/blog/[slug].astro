@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import ContentImage from '../../components/ContentImage.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
 import PostCard from '../../components/PostCard.astro';
 import { site } from '../../data/site';
 import { categories, tags } from '../../data/tags';
@@ -59,16 +60,27 @@ const structured = {
   publishedAt={post.data.publishedAt}
   updatedAt={post.data.updatedAt}
 >
-  <div class="container page-content">
+  <div class="container page-shell">
     <Breadcrumbs items={breadcrumbs} />
     <article data-pagefind-body>
-      <header class="article-header">
+      <header
+        class="article-header mb-10 max-w-[900px] border-b border-[var(--line)] pb-[35px]"
+      >
         <span class="category-label">{categories[post.data.category]}</span>
         {post.data.draft && (
           <span class="draft-badge">下書き・ローカル限定</span>
         )}
-        <h1 data-pagefind-meta="title">{post.data.title}</h1>
-        <p class="article-description">{post.data.description}</p>
+        <h1
+          class="my-5 break-words text-[clamp(1.9rem,4vw,2.7rem)] max-[767px]:text-[28px]"
+          data-pagefind-meta="title"
+        >
+          {post.data.title}
+        </h1>
+        <p
+          class="article-description text-[15px] leading-[2] text-[var(--muted)] max-[767px]:text-sm"
+        >
+          {post.data.description}
+        </p>
         <div class="article-meta">
           <span>
             {authors.map((author) => author.data.displayName).join('・')}
@@ -82,14 +94,16 @@ const structured = {
             </time>
           )}
         </div>
-        <div class="tag-list article-tags">
+        <div
+          class="mt-5 flex flex-wrap gap-2 text-[11px] text-[var(--muted)] [&>a:hover]:text-[var(--accent)]"
+        >
           {post.data.tags.map((id) => (
             <a href={`/tags/${id}/`}>#{tags[id as keyof typeof tags]}</a>
           ))}
         </div>
         {post.data.cover && (
           <ContentImage
-            class="article-cover"
+            class="article-cover mt-[30px] w-full rounded-lg"
             src={post.data.cover}
             alt={post.data.coverAlt ?? post.data.title}
             kind="cover"
@@ -155,19 +169,41 @@ const structured = {
     </article>
     {related.length > 0 && (
       <section class="related-section">
-        <div class="section-header">
+        <div class="mb-8 flex items-end justify-between gap-5 [&_.eyebrow]:mb-[11px]">
           <div>
-            <p class="eyebrow">KEEP EXPLORING</p>
+            <Eyebrow>KEEP EXPLORING</Eyebrow>
             <h2>こちらもどうぞ。</h2>
           </div>
         </div>
-        <div class="post-grid">
+        <div class="grid grid-cols-3 gap-6 max-[1023px]:gap-[15px] max-[767px]:grid-cols-1 max-[767px]:gap-5">
           {related.map((entry, index) => (
             <PostCard post={entry} index={index} />
           ))}
         </div>
       </section>
     )}
-    <a class="back-link" href="/blog/"> ← 記事一覧に戻る </a>
+    <a
+      class="back-link mt-10 inline-block text-[13px] text-[var(--accent)]"
+      href="/blog/"
+    >
+      ← 記事一覧に戻る
+    </a>
   </div>
 </Base>
+
+<style>
+.category-label {
+  display: inline-flex;
+  padding: 3px 9px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  color: var(--accent);
+  font-size: 10px;
+}
+
+@media (max-width: 767px) {
+  .category-label {
+    font-size: 11px;
+  }
+}
+</style>

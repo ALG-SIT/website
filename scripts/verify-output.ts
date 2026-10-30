@@ -154,10 +154,30 @@ for (const [path, $] of cache) {
   descriptions.add(description ?? '');
   assert($('html').attr('lang') === 'ja', `langがjaではありません: ${name}`);
   assert($('h1').length === 1, `h1はページに1個必要です: ${name}`);
+  const stylesheetLinks = $('link[rel="stylesheet"]');
   assert(
-    $('link[rel="stylesheet"]').length === 0,
-    `外部スタイルシートが残っています: ${name}`,
+    stylesheetLinks.length > 0 || $('style').length > 0,
+    `スタイルシートがありません: ${name}`,
   );
+  for (const link of stylesheetLinks.toArray()) {
+    const href = $(link).attr('href');
+    let stylesheetPath: string | undefined;
+    try {
+      const url = new URL(href ?? '', site.url);
+      if (
+        url.origin === new URL(site.url).origin &&
+        url.pathname.startsWith('/_astro/') &&
+        url.pathname.endsWith('.css')
+      )
+        stylesheetPath = join(root, url.pathname.slice(1));
+    } catch {
+      /* 不正な参照は下の検証で報告する */
+    }
+    assert(
+      stylesheetPath !== undefined && files.includes(stylesheetPath),
+      `スタイルシートの参照先がありません: ${name} → ${href}`,
+    );
+  }
   const fontUrls = [
     ...$('style')
       .text()

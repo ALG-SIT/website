@@ -7,14 +7,19 @@ interface Props {
 const { items } = Astro.props;
 ---
 
-<nav class="breadcrumbs" aria-label="パンくず">
+<nav
+  class="breadcrumbs mb-10 flex flex-wrap gap-[13px] text-[11px] text-[var(--muted)]"
+  aria-label="パンくず"
+>
   {items.map((item, index) => (
     <>
       {index > 0 && <span aria-hidden="true">/</span>}
       {index === items.length - 1 ? (
         <span aria-current="page">{item.name}</span>
       ) : (
-        <a href={item.path}>{item.name}</a>
+        <a class="hover:text-[var(--accent)]" href={item.path}>
+          {item.name}
+        </a>
       )}
     </>
   ))}

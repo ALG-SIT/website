@@ -44,7 +44,7 @@
   },
   "overrides": [
     {
-      "includes": ["src/styles/global.css"],
+      "includes": ["src/styles/global.css", "src/styles/content.css"],
       "linter": {
         "rules": {
           "style": {
