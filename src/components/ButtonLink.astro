@@ -3,14 +3,25 @@ interface Props {
   href: string;
   variant?: 'primary' | 'secondary';
   class?: string;
+  hero?: boolean;
 }
 
-const { href, variant = 'primary', class: className } = Astro.props;
+const {
+  href,
+  variant = 'primary',
+  class: className,
+  hero = false,
+} = Astro.props;
 ---
 
 <!-- biome-ignore lint/a11y/useAnchorContent: Callers provide visible text in the slot. -->
 <a
-  class:list={['button-link', `button-link--${variant}`, className]}
+  class:list={[
+    'button-link',
+    `button-link--${variant}`,
+    { 'button-link--hero': hero },
+    className,
+  ]}
   href={href}
 >
   <slot />
@@ -53,7 +64,7 @@ const { href, variant = 'primary', class: className } = Astro.props;
 }
 
 @media (max-width: 1023px) {
-  .button-link {
+  .button-link--hero {
     gap: 10px;
     padding: 11px 14px;
     font-size: 11px;
@@ -61,7 +72,7 @@ const { href, variant = 'primary', class: className } = Astro.props;
 }
 
 @media (max-width: 767px) {
-  .button-link {
+  .button-link--hero {
     padding: 12px 16px;
     font-size: 12px;
   }

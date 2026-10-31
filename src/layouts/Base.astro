@@ -71,6 +71,18 @@ const structured = [
     <meta charset="UTF-8">
     <style is:inline>
     @layer theme, base, components, utilities;
+    @media (max-width: 359px) {
+      .icon-button--search,
+      .mobile-toggle {
+        width: 28px;
+        height: 28px;
+      }
+
+      .icon-button--theme {
+        width: 24px;
+        height: 24px;
+      }
+    }
     </style>
     <Font cssVariable="--font-alg" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -166,11 +178,11 @@ const structured = [
       class="relative z-20 border-b border-[var(--line)] bg-[var(--header-bg)]"
     >
       <div
-        class="container flex h-[88px] items-center gap-6 max-[767px]:h-[72px]"
+        class="header-inner container flex h-[88px] items-center gap-6 max-[1023px]:gap-5 max-[767px]:h-[72px] max-[767px]:justify-between max-[767px]:gap-3"
       >
         <a
           href="/"
-          class="inline-flex shrink-0 items-center px-2 py-1.5 text-[var(--text)]"
+          class="brand inline-flex shrink-0 items-center px-2 py-1.5 text-[var(--text)] max-[767px]:p-[5px]"
           aria-label="ALG AI Love GPU ホーム"
         >
           <BrandWordmark />
@@ -188,7 +200,7 @@ const structured = [
           ))}
         </nav>
         <div
-          class="header-actions flex min-w-0 items-center gap-3 max-[900px]:ml-auto max-[900px]:gap-0.5"
+          class="header-actions flex min-w-0 items-center gap-3 max-[767px]:gap-0.5"
         >
           <button
             type="button"
@@ -265,7 +277,7 @@ const structured = [
           <div>
             <a
               href="/"
-              class="inline-flex shrink-0 items-center px-2 py-1.5 text-[var(--text)]"
+              class="brand inline-flex shrink-0 items-center px-2 py-1.5 text-[var(--text)] max-[767px]:p-[5px]"
               aria-label="AI Love GPU ホーム"
             >
               <BrandWordmark />
@@ -526,18 +538,18 @@ const structured = [
       list-style: none;
     }
 
-    #search-results li {
+    #search-results :global(li) {
       padding: 16px 0;
       border-top: 1px solid var(--line);
     }
 
-    #search-results a {
+    #search-results :global(a) {
       color: var(--accent);
       font-size: 15px;
       font-weight: 600;
     }
 
-    #search-results p {
+    #search-results :global(p) {
       margin: 8px 0 0;
       color: var(--muted);
       font-size: 12px;
@@ -558,27 +570,17 @@ const structured = [
         gap: 18px;
         font-size: 12px;
       }
-    }
 
-    @media (max-width: 900px) {
-      .desktop-nav,
       .participate-link {
         display: none;
-      }
-
-      .mobile-toggle {
-        display: inline-grid;
-      }
-
-      .mobile-nav.is-open {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        padding-bottom: 15px;
       }
     }
 
     @media (max-width: 767px) {
+      .desktop-nav {
+        display: none;
+      }
+
       .icon-button--search,
       .mobile-toggle {
         width: 32px;
@@ -588,6 +590,17 @@ const structured = [
       .icon-button--theme {
         width: 28px;
         height: 28px;
+      }
+
+      .mobile-toggle {
+        display: grid;
+      }
+
+      .mobile-nav.is-open {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding-bottom: 15px;
       }
 
       .footer-meta {
@@ -603,7 +616,6 @@ const structured = [
         padding: 20px;
       }
     }
-
     @media (max-width: 359px) {
       .icon-button--search,
       .mobile-toggle {

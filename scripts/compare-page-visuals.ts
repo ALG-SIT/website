@@ -61,192 +61,225 @@ function serve(root: string, port: number) {
   });
 }
 
-const [baselineRoutes, currentRoutes] = await Promise.all([
-  routesIn(baselineRoot),
-  routesIn(currentRoot),
-]);
-if (
-  JSON.stringify([...baselineRoutes].sort()) !==
-  JSON.stringify([...currentRoutes].sort())
-)
-  throw new Error(
-    `ルート不一致\nbaseline: ${baselineRoutes.sort().join(', ')}\ncurrent: ${currentRoutes.sort().join(', ')}`,
-  );
+export function comparePixels(
+  baseline: { data: Uint8Array; width: number; height: number },
+  current: { data: Uint8Array; width: number; height: number },
+  threshold: number,
+): number {
+  const width = Math.min(baseline.width, current.width);
+  const height = Math.min(baseline.height, current.height);
+  const overlap = width * height;
+  // Compare the union of both image areas; absent pixels always differ.
+  const pixels =
+    baseline.width * baseline.height + current.width * current.height - overlap;
+  let changed = pixels - overlap;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const before = (y * baseline.width + x) * 4;
+      const after = (y * current.width + x) * 4;
+      let difference = 0;
+      for (let channel = 0; channel < 3; channel++) {
+        difference += Math.abs(
+          baseline.data[before + channel] - current.data[after + channel],
+        );
+      }
+      if (difference > threshold) changed++;
+    }
+  }
+  return pixels === 0 ? 0 : (changed / pixels) * 100;
+}
 
-const baselineServer = serve(baselineRoot, baselinePort);
-const currentServer = serve(currentRoot, currentPort);
-const browser = await chromium.launch({ headless: true });
-const results: Array<{
-  route: string;
-  width: number;
-  theme: (typeof themes)[number];
-  baselineHeight: number;
-  currentHeight: number;
-  heightDelta: number;
-  changedPercent: number;
-  horizontalOverflow: boolean;
-}> = [];
-const mismatches: Array<{
-  route: string;
-  width: number;
-  theme: (typeof themes)[number];
-  baseline: Buffer;
-  current: Buffer;
-}> = [];
+if (import.meta.main) {
+  const [baselineRoutes, currentRoutes] = await Promise.all([
+    routesIn(baselineRoot),
+    routesIn(currentRoot),
+  ]);
+  if (
+    JSON.stringify([...baselineRoutes].sort()) !==
+    JSON.stringify([...currentRoutes].sort())
+  )
+    throw new Error(
+      `ルート不一致\nbaseline: ${baselineRoutes.sort().join(', ')}\ncurrent: ${currentRoutes.sort().join(', ')}`,
+    );
 
-try {
-  await mkdir('artifacts/page-display-audit', { recursive: true });
-  for (const width of widths) {
-    for (const theme of themes) {
-      const context = await browser.newContext({
-        viewport: { width, height: 900 },
-        deviceScaleFactor: 1,
-        colorScheme: theme,
-      });
-      await context.addInitScript((preference) => {
-        localStorage.setItem('alg-theme', preference);
-      }, theme);
-      for (const route of [...baselineRoutes].sort()) {
-        const captures: Buffer[] = [];
-        let baselineHeight = 0;
-        let currentHeight = 0;
-        let horizontalOverflow = false;
-        for (const [port, version] of [
-          [baselinePort, 'baseline'],
-          [currentPort, 'current'],
-        ] as const) {
-          const page = await context.newPage();
-          const errors: string[] = [];
-          page.on('pageerror', (error) => errors.push(error.message));
-          const response = await page.goto(`http://127.0.0.1:${port}${route}`, {
-            waitUntil: 'networkidle',
-          });
-          if (!response?.ok())
-            throw new Error(`${version} ${route}: HTTP ${response?.status()}`);
-          await page.evaluate(async () => {
-            await document.fonts.ready;
-            await Promise.all(
-              [...document.images].map((image) =>
-                image.decode().catch(() => {}),
-              ),
+  const baselineServer = serve(baselineRoot, baselinePort);
+  const currentServer = serve(currentRoot, currentPort);
+  const browser = await chromium.launch({ headless: true });
+  const results: Array<{
+    route: string;
+    width: number;
+    theme: (typeof themes)[number];
+    baselineHeight: number;
+    currentHeight: number;
+    heightDelta: number;
+    changedPercent: number;
+    horizontalOverflow: boolean;
+  }> = [];
+  const mismatches: Array<{
+    route: string;
+    width: number;
+    theme: (typeof themes)[number];
+    baseline: Buffer;
+    current: Buffer;
+  }> = [];
+
+  try {
+    await mkdir('artifacts/page-display-audit', { recursive: true });
+    for (const width of widths) {
+      for (const theme of themes) {
+        const context = await browser.newContext({
+          viewport: { width, height: 900 },
+          deviceScaleFactor: 1,
+          colorScheme: theme,
+        });
+        await context.addInitScript((preference) => {
+          localStorage.setItem('alg-theme', preference);
+        }, theme);
+        for (const route of [...baselineRoutes].sort()) {
+          const captures: Buffer[] = [];
+          let baselineHeight = 0;
+          let currentHeight = 0;
+          let horizontalOverflow = false;
+          for (const [port, version] of [
+            [baselinePort, 'baseline'],
+            [currentPort, 'current'],
+          ] as const) {
+            const page = await context.newPage();
+            const errors: string[] = [];
+            page.on('pageerror', (error) => errors.push(error.message));
+            const response = await page.goto(
+              `http://127.0.0.1:${port}${route}`,
+              {
+                waitUntil: 'networkidle',
+              },
             );
-          });
-          const layout = await page.evaluate(() => ({
-            height: Math.ceil(document.documentElement.scrollHeight),
-            overflow: document.documentElement.scrollWidth > innerWidth,
-          }));
-          if (version === 'baseline') baselineHeight = layout.height;
-          else {
-            currentHeight = layout.height;
-            horizontalOverflow = layout.overflow;
+            if (!response?.ok())
+              throw new Error(
+                `${version} ${route}: HTTP ${response?.status()}`,
+              );
+            await page.evaluate(async () => {
+              await document.fonts.ready;
+              await Promise.all(
+                [...document.images].map((image) =>
+                  image.decode().catch(() => {}),
+                ),
+              );
+            });
+            const layout = await page.evaluate(() => ({
+              height: Math.ceil(document.documentElement.scrollHeight),
+              overflow: document.documentElement.scrollWidth > innerWidth,
+            }));
+            if (version === 'baseline') baselineHeight = layout.height;
+            else {
+              currentHeight = layout.height;
+              horizontalOverflow = layout.overflow;
+            }
+            const screenshot = Buffer.from(
+              await page.screenshot({
+                fullPage: true,
+                animations: 'disabled',
+                caret: 'hide',
+              }),
+            );
+            captures.push(screenshot);
+            if (errors.length)
+              throw new Error(`${version} ${route}: ${errors.join('; ')}`);
+            await page.close();
           }
-          const screenshot = Buffer.from(
-            await page.screenshot({
-              fullPage: true,
-              animations: 'disabled',
-              caret: 'hide',
-            }),
-          );
-          captures.push(screenshot);
-          if (errors.length)
-            throw new Error(`${version} ${route}: ${errors.join('; ')}`);
-          await page.close();
-        }
 
-        const baseline = await sharp(captures[0]).ensureAlpha().raw().toBuffer({
-          resolveWithObject: true,
-        });
-        const current = await sharp(captures[1]).ensureAlpha().raw().toBuffer({
-          resolveWithObject: true,
-        });
-        const height = Math.min(baseline.info.height, current.info.height);
-        let changed = 0;
-        const pixels = baseline.info.width * height;
-        for (let y = 0; y < height; y++) {
-          for (let x = 0; x < baseline.info.width; x++) {
-            const offset = (y * baseline.info.width + x) * 4;
-            const difference =
-              Math.abs(baseline.data[offset] - current.data[offset]) +
-              Math.abs(baseline.data[offset + 1] - current.data[offset + 1]) +
-              Math.abs(baseline.data[offset + 2] - current.data[offset + 2]);
-            if (difference > threshold) changed++;
-          }
-        }
-        const changedPercent = (changed / pixels) * 100;
-        results.push({
-          route,
-          width,
-          theme,
-          baselineHeight,
-          currentHeight,
-          heightDelta: currentHeight - baselineHeight,
-          changedPercent,
-          horizontalOverflow,
-        });
-        if (
-          changedPercent > 0.5 ||
-          currentHeight !== baselineHeight ||
-          horizontalOverflow
-        )
-          mismatches.push({
+          const baseline = await sharp(captures[0])
+            .ensureAlpha()
+            .raw()
+            .toBuffer({
+              resolveWithObject: true,
+            });
+          const current = await sharp(captures[1])
+            .ensureAlpha()
+            .raw()
+            .toBuffer({
+              resolveWithObject: true,
+            });
+          const changedPercent = comparePixels(
+            { data: baseline.data, ...baseline.info },
+            { data: current.data, ...current.info },
+            threshold,
+          );
+          results.push({
             route,
             width,
             theme,
-            baseline: captures[0],
-            current: captures[1],
+            baselineHeight,
+            currentHeight,
+            heightDelta: currentHeight - baselineHeight,
+            changedPercent,
+            horizontalOverflow,
           });
-        console.log(
-          `${route} ${width}px ${theme}: diff=${changedPercent.toFixed(3)}%, height=${baselineHeight}→${currentHeight}px${horizontalOverflow ? ', overflow' : ''}`,
-        );
+          if (
+            changedPercent > 0.5 ||
+            currentHeight !== baselineHeight ||
+            horizontalOverflow
+          )
+            mismatches.push({
+              route,
+              width,
+              theme,
+              baseline: captures[0],
+              current: captures[1],
+            });
+          console.log(
+            `${route} ${width}px ${theme}: diff=${changedPercent.toFixed(3)}%, height=${baselineHeight}→${currentHeight}px${horizontalOverflow ? ', overflow' : ''}`,
+          );
+        }
+        await context.close();
       }
-      await context.close();
     }
-  }
 
-  await Promise.all(
-    mismatches.map(async ({ route, width, theme, baseline, current }) => {
-      const slug =
-        route === '/' ? 'home' : route.replaceAll('/', '_').replace(/^_/, '');
-      const base = `artifacts/page-display-audit/${slug}-${width}-${theme}`;
-      await Promise.all([
-        writeFile(`${base}-baseline.png`, baseline),
-        writeFile(`${base}-current.png`, current),
-      ]);
-    }),
-  );
-  const report = {
-    baselineRoot,
-    currentRoot,
-    routes: baselineRoutes.sort(),
-    widths,
-    themes,
-    threshold,
-    results,
-    summary: {
-      pages: baselineRoutes.length,
-      comparisons: results.length,
-      overflowCount: results.filter((result) => result.horizontalOverflow)
-        .length,
-      heightMismatchCount: results.filter((result) => result.heightDelta !== 0)
-        .length,
-      aboveHalfPercentCount: results.filter(
-        (result) => result.changedPercent > 0.5,
-      ).length,
-      maxDifferencePercent: Math.max(
-        ...results.map((result) => result.changedPercent),
-      ),
-    },
-  };
-  await writeFile(
-    'artifacts/page-display-audit/report.json',
-    `${JSON.stringify(report, null, 2)}\n`,
-  );
-  console.log('SUMMARY', JSON.stringify(report.summary));
-  console.log(
-    `Saved ${mismatches.length} screenshot pairs over the audit threshold.`,
-  );
-} finally {
-  await browser.close();
-  baselineServer.stop(true);
-  currentServer.stop(true);
+    await Promise.all(
+      mismatches.map(async ({ route, width, theme, baseline, current }) => {
+        const slug =
+          route === '/' ? 'home' : route.replaceAll('/', '_').replace(/^_/, '');
+        const base = `artifacts/page-display-audit/${slug}-${width}-${theme}`;
+        await Promise.all([
+          writeFile(`${base}-baseline.png`, baseline),
+          writeFile(`${base}-current.png`, current),
+        ]);
+      }),
+    );
+    const report = {
+      baselineRoot,
+      currentRoot,
+      routes: baselineRoutes.sort(),
+      widths,
+      themes,
+      threshold,
+      results,
+      summary: {
+        pages: baselineRoutes.length,
+        comparisons: results.length,
+        overflowCount: results.filter((result) => result.horizontalOverflow)
+          .length,
+        heightMismatchCount: results.filter(
+          (result) => result.heightDelta !== 0,
+        ).length,
+        aboveHalfPercentCount: results.filter(
+          (result) => result.changedPercent > 0.5,
+        ).length,
+        maxDifferencePercent: Math.max(
+          ...results.map((result) => result.changedPercent),
+        ),
+      },
+    };
+    await writeFile(
+      'artifacts/page-display-audit/report.json',
+      `${JSON.stringify(report, null, 2)}\n`,
+    );
+    console.log('SUMMARY', JSON.stringify(report.summary));
+    console.log(
+      `Saved ${mismatches.length} screenshot pairs over the audit threshold.`,
+    );
+  } finally {
+    await browser.close();
+    baselineServer.stop(true);
+    currentServer.stop(true);
+  }
 }
