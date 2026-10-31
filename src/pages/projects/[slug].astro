@@ -1,7 +1,9 @@
 ---
 import { render } from 'astro:content';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ButtonLink from '../../components/ButtonLink.astro';
 import ContentImage from '../../components/ContentImage.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
 import { statuses } from '../../data/tags';
 import Base from '../../layouts/Base.astro';
 import { publishedProjects, resolveAuthors } from '../../lib/content';
@@ -32,32 +34,42 @@ const breadcrumbs = [
   image={image}
   breadcrumbs={breadcrumbs}
 >
-  <div class="container page-content">
+  <div class="container page-shell">
     <Breadcrumbs items={breadcrumbs} />
     <article data-pagefind-body>
-      <header class="article-header">
-        <p class="eyebrow">PROJECT / {statuses[project.data.status]}</p>
+      <header
+        class="article-header mb-10 max-w-[900px] border-b border-[var(--line)] pb-[35px]"
+      >
+        <Eyebrow>PROJECT / {statuses[project.data.status]}</Eyebrow>
         {project.data.draft && (
           <span class="draft-badge">下書き・ローカル限定</span>
         )}
-        <h1 data-pagefind-meta="title">{project.data.title}</h1>
-        <p class="article-description">{project.data.description}</p>
-        <div class="tech-list">
-          {project.data.technologies.map((tech) => <span>{tech}</span>)}
+        <h1
+          class="my-5 break-words text-[clamp(1.9rem,4vw,2.7rem)] max-[767px]:text-[28px]"
+          data-pagefind-meta="title"
+        >
+          {project.data.title}
+        </h1>
+        <p
+          class="article-description text-[15px] leading-[2] text-[var(--muted)] max-[767px]:text-sm"
+        >
+          {project.data.description}
+        </p>
+        <div class="flex flex-wrap gap-[7px]">
+          {project.data.technologies.map((tech) => (
+            <span class="project-technology">{tech}</span>
+          ))}
         </div>
-        <div class="project-links">
+        <div class="project-links mt-[25px] flex flex-wrap gap-3">
           {project.data.repositoryUrl && (
-            <a
-              class="button button-secondary"
-              href={project.data.repositoryUrl}
-            >
+            <ButtonLink href={project.data.repositoryUrl} variant="secondary">
               GitHubで見る ↗
-            </a>
+            </ButtonLink>
           )}
           {project.data.websiteUrl && (
-            <a class="button button-primary" href={project.data.websiteUrl}>
+            <ButtonLink href={project.data.websiteUrl}>
               プロジェクトを開く ↗
-            </a>
+            </ButtonLink>
           )}
         </div>
         {authors.length > 0 && (
@@ -67,7 +79,7 @@ const breadcrumbs = [
         )}
         {project.data.cover && (
           <ContentImage
-            class="article-cover"
+            class="article-cover mt-[30px] w-full rounded-lg"
             src={project.data.cover}
             alt={project.data.coverAlt ?? project.data.title}
             kind="cover"
@@ -96,6 +108,23 @@ const breadcrumbs = [
         )}
       </div>
     </article>
-    <a class="back-link" href="/projects/"> ← プロジェクト一覧に戻る </a>
+    <a
+      class="back-link mt-10 inline-block text-[13px] text-[var(--accent)]"
+      href="/projects/"
+    >
+      ← プロジェクト一覧に戻る
+    </a>
   </div>
 </Base>
+
+<style>
+.project-technology {
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+</style>

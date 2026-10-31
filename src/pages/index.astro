@@ -1,5 +1,7 @@
 ---
 import BrandSquare from '../components/BrandSquare.astro';
+import ButtonLink from '../components/ButtonLink.astro';
+import Eyebrow from '../components/Eyebrow.astro';
 import Icon from '../components/Icon.astro';
 import PostCard from '../components/PostCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
@@ -38,33 +40,38 @@ const activities = [
 <Base
   description="芝浦工業大学の学生団体ALG（AI Love GPU）。共有GPU資源の運用、AI駆動開発、勉強会とセミナーの活動・計画を紹介します。"
 >
-  <section class="hero grid-background">
+  <section
+    class="hero relative overflow-hidden border-b border-[var(--line)] grid-background"
+  >
     <div class="container hero-inner">
       <div class="hero-copy">
-        <p class="eyebrow">
-          <span></span>
+        <Eyebrow dot class="max-[767px]:text-[9px]">
           AI LOVE GPU / SHIBAURA INSTITUTE OF TECHNOLOGY
-        </p>
-        <h1>
+        </Eyebrow>
+        <h1 class="hero-title">
           好奇心を、
           <br>
-          <span>動かそう。</span>
+          <span class="text-[var(--accent)]">動かそう。</span>
         </h1>
-        <p class="hero-description">
+        <p
+          class="mb-[30px] text-[15px] leading-[2.05] text-[var(--muted)] max-[767px]:text-sm"
+        >
           AIを学び、作り、動かす。
           <br>
           芝浦工業大学の仲間と、アイデアを形に。
         </p>
-        <div class="hero-buttons">
-          <a href="/about/" class="button button-primary">
+        <div class="flex flex-wrap gap-3">
+          <ButtonLink href="/about/" hero>
             ALGについて知る <Icon name="arrow" size={18} />
-          </a>
-          <a href="/blog/" class="button button-secondary">
+          </ButtonLink>
+          <ButtonLink href="/blog/" variant="secondary" hero>
             技術記事を読む <Icon name="arrow" size={18} />
-          </a>
+          </ButtonLink>
         </div>
-        <div class="hero-caption">
-          <span class="status-dot"></span>
+        <div class="hero-status">
+          <span
+            class="inline-block size-1 shrink-0 rounded-full bg-[var(--green)]"
+          ></span>
           LEARN. BUILD. SHARE.
         </div>
       </div>
@@ -76,97 +83,359 @@ const activities = [
         <BrandSquare />
       </div>
     </div>
-    <div class="container hero-bottom">
+    <div class="container hero-scroll">
       <span>POWERED BY CURIOSITY, NOT JUST COMPUTE.</span>
       <span> SCROLL TO EXPLORE <span aria-hidden="true">↓</span> </span>
     </div>
   </section>
-  <section class="section container">
-    <div class="section-header">
+  <section class="py-[84px] max-[767px]:py-[55px] container">
+    <div class="section-heading-row">
       <div>
-        <p class="eyebrow">OUR ACTIVITIES</p>
+        <Eyebrow class="home-section-eyebrow"> OUR ACTIVITIES </Eyebrow>
         <h2>学びと開発をつなぐ、3つの活動。</h2>
       </div>
-      <a class="text-link" href="/about/">
+      <a class="section-more" href="/about/">
         私たちについて <Icon name="arrow" size={18} />
       </a>
     </div>
-    <p class="section-intro">
+    <p
+      class="mb-8 text-sm leading-[2] text-[var(--muted)] max-[767px]:text-[13px]"
+    >
       ALG（AI Love GPU）は、芝浦工業大学の学生が、
-      <br class="desktop-break">
+      <br class="desktop-break max-[767px]:hidden">
       計算資源・開発力・理論の理解を共同で身につける団体です。
     </p>
-    <div class="activities-grid">
+    <div
+      class="grid grid-cols-3 gap-5 max-[1023px]:gap-[15px] max-[767px]:grid-cols-1 max-[767px]:gap-5"
+    >
       {activities.map((activity) => (
         <article class="activity-card">
-          <div class="activity-card-top">
+          <div class="mb-6 flex items-center justify-between text-[var(--green)] max-[767px]:mb-[15px]">
             <Icon name={activity.icon} size={27} />
-            <span>{activity.number}</span>
+            <span class="font-mono text-[10px] text-[var(--muted)]">
+              {activity.number}
+            </span>
           </div>
           <p class="activity-english">{activity.english}</p>
-          <h3>{activity.title}</h3>
-          <p>{activity.text}</p>
+          <h3 class="mb-3 text-lg">{activity.title}</h3>
+          <p class="mb-0 text-[13px] leading-[1.95] text-[var(--muted)]">
+            {activity.text}
+          </p>
         </article>
       ))}
     </div>
   </section>
-  <section class="section section-tinted">
+  <section
+    class="border-y border-[var(--line)] bg-[var(--surface-soft)] py-[84px] max-[767px]:py-[55px]"
+  >
     <div class="container">
-      <div class="section-header">
+      <div class="section-heading-row">
         <div>
-          <p class="eyebrow">LATEST NOTES</p>
+          <Eyebrow class="mb-[11px]">LATEST NOTES</Eyebrow>
           <h2>試したこと、学んだこと。</h2>
         </div>
-        <a class="text-link" href="/blog/">
+        <a class="section-more" href="/blog/">
           すべての記事 <Icon name="arrow" size={18} />
         </a>
       </div>
-      <div class="post-grid">
+      <div
+        class="grid grid-cols-3 gap-6 max-[1023px]:gap-[15px] max-[767px]:grid-cols-1 max-[767px]:gap-5"
+      >
         {posts.map((post, index) => <PostCard post={post} index={index} />)}
         {!posts.length && (
-          <p class="empty-state">最初の記事を準備しています。</p>
+          <p class="col-span-full border border-dashed border-[var(--line)] p-10 text-center text-[var(--muted)]">
+            最初の記事を準備しています。
+          </p>
         )}
       </div>
     </div>
   </section>
-  <section class="section container">
-    <div class="section-header">
+  <section class="container py-[84px] max-[767px]:py-[55px]">
+    <div class="section-heading-row">
       <div>
-        <p class="eyebrow">FEATURED PROJECTS</p>
+        <Eyebrow class="mb-[11px]">FEATURED PROJECTS</Eyebrow>
         <h2>アイデアの、その先へ。</h2>
       </div>
-      <a class="text-link" href="/projects/">
+      <a class="section-more" href="/projects/">
         すべてのプロジェクト <Icon name="arrow" size={18} />
       </a>
     </div>
-    <div class="project-grid">
+    <div
+      class="grid grid-cols-2 gap-6 max-[767px]:grid-cols-1 max-[767px]:gap-5"
+    >
       {projects.map((project, index) => (
         <ProjectCard project={project} index={index} />
       ))}
       {!projects.length && (
-        <p class="empty-state">プロジェクトの公開を準備しています。</p>
+        <p class="col-span-full border border-dashed border-[var(--line)] p-10 text-center text-[var(--muted)]">
+          プロジェクトの公開を準備しています。
+        </p>
       )}
     </div>
   </section>
-  <section class="container join-section">
-    <div class="join-panel">
+  <section class="container py-0 pb-[84px] max-[767px]:pb-[55px]">
+    <div class="home-join-panel">
       <div>
-        <p class="eyebrow"><span></span> YOUR NEXT EXPERIMENT STARTS HERE</p>
-        <h2>
+        <Eyebrow dot class="max-[767px]:text-[8px]"
+          >YOUR NEXT EXPERIMENT STARTS HERE</Eyebrow
+        >
+        <h2
+          class="mb-[17px] text-[clamp(1.6rem,3vw,2.25rem)] max-[767px]:text-[27px]"
+        >
           その好奇心、
-          <br class="mobile-break">
+          <br class="hidden max-[767px]:inline">
           一緒に育てよう。
         </h2>
-        <p>
+        <p class="mb-0 text-[13px] leading-[2] text-[var(--muted)]">
           「AIが気になる」「何かつくってみたい」
           <br>
           その気持ちから、はじめてみませんか。
         </p>
       </div>
-      <a href="/join/" class="button button-primary">
+      <ButtonLink href="/join/" class="relative z-[1] shrink-0">
         入部案内を見る <Icon name="arrow" size={20} />
-      </a>
+      </ButtonLink>
       <span class="join-decoration" aria-hidden="true"> + </span>
     </div>
   </section>
 </Base>
+
+<style>
+.hero-logo {
+  width: 100%;
+  max-width: 420px;
+  justify-self: end;
+  color: var(--text);
+}
+
+.hero-inner {
+  position: relative;
+  display: grid;
+  min-height: 570px;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: center;
+  gap: 40px;
+  padding-top: 32px;
+}
+
+.hero-title {
+  margin-top: 26px;
+  margin-bottom: 22px;
+  font-size: clamp(3.4rem, 6vw, 4.75rem);
+  line-height: 1.36;
+  letter-spacing: -0.065em;
+}
+
+.hero-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 28px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.hero-scroll {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding-block: 26px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.13em;
+}
+
+.hero-scroll > span:last-child {
+  display: flex;
+  gap: 16px;
+}
+
+.activity-card {
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.activity-english {
+  margin-bottom: 9px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.home-join-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  overflow: hidden;
+  padding: 44px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+}
+
+:global(.home-section-eyebrow) {
+  margin-bottom: 11px;
+}
+
+.section-heading-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.section-more {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 13px;
+  padding-bottom: 6px;
+  color: var(--green);
+  font-size: 12px;
+}
+
+.section-more:hover {
+  color: var(--accent);
+}
+
+.grid-background {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-position: center;
+  background-size: 64px 64px;
+}
+
+.hero::before {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, var(--bg) 12%, transparent 100%),
+    linear-gradient(0deg, var(--bg), transparent 35%);
+  content: "";
+  pointer-events: none;
+}
+
+.join-decoration {
+  position: absolute;
+  right: 7%;
+  bottom: -110px;
+  color: var(--accent);
+  font: 360px / 1 var(--font-mono);
+  opacity: 0.035;
+}
+
+.hero-logo :global(.brand-square) {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (min-width: 1440px) {
+  .hero-inner {
+    min-height: 640px;
+  }
+
+  .hero-title {
+    font-size: 84px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .hero-inner {
+    min-height: 520px;
+    gap: 20px;
+  }
+
+  .hero-title {
+    font-size: 55px;
+  }
+
+  .activity-card {
+    padding: 22px;
+  }
+
+  .home-join-panel {
+    padding: 35px;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding-top: 55px;
+  }
+
+  .hero-title {
+    margin-top: 24px;
+    font-size: clamp(3.3rem, 12.5vw, 4.3rem);
+  }
+
+  .hero-status {
+    font-size: 8px;
+  }
+
+  .hero-scroll {
+    padding-block: 20px;
+    font-size: 7px;
+  }
+
+  .hero-scroll > span:first-child {
+    max-width: 155px;
+    line-height: 1.9;
+  }
+
+  .hero-scroll > span:last-child {
+    align-items: center;
+    gap: 8px;
+    font-size: 7px;
+  }
+
+  .activity-card {
+    padding: 25px;
+  }
+
+  .activity-card h3 {
+    font-size: 19px;
+  }
+
+  .home-join-panel {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+    padding: 30px 24px;
+  }
+
+  .section-heading-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 25px;
+  }
+
+  .section-heading-row h2 {
+    font-size: 23px;
+  }
+
+  .section-more {
+    padding-bottom: 0;
+  }
+
+  .hero-logo {
+    width: 85%;
+    max-width: 330px;
+    justify-self: center;
+    margin-top: 35px;
+    margin-bottom: 20px;
+  }
+}
+</style>

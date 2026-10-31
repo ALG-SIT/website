@@ -51,6 +51,8 @@ test('最適化したワードマークと正方形ロゴがテーマに追従�
   const lineColor = await line.evaluate((el) => getComputedStyle(el).fill);
   const lightWordmarks = page.locator('.brand-wordmark-light');
   const darkWordmarks = page.locator('.brand-wordmark-dark');
+  await expect(lightWordmarks).toHaveCount(2);
+  await expect(darkWordmarks).toHaveCount(2);
   for (const image of await lightWordmarks.all()) {
     await expect(image).toBeVisible();
     await expect(image).toHaveAttribute(
@@ -85,7 +87,9 @@ test('最適化したワードマークと正方形ロゴがテーマに追従�
     'rgba(0, 0, 0, 0)',
   );
   await expect(page.locator('.hero-logo')).toHaveCSS('box-shadow', 'none');
-  for (const brand of await page.locator('.brand').all()) {
+  const brands = page.locator('.brand');
+  await expect(brands).toHaveCount(2);
+  for (const brand of await brands.all()) {
     await expect(brand).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   }
   await expect(page.locator('.brand-wordmark svg')).toHaveCount(0);

@@ -1,4 +1,5 @@
 ---
+import ButtonLink from '../components/ButtonLink.astro';
 import Icon from '../components/Icon.astro';
 import PageHeading from '../components/PageHeading.astro';
 import Base from '../layouts/Base.astro';
@@ -13,13 +14,13 @@ const hasLumin = (await publishedProjects()).some(
   title="ALGについて"
   description="芝浦工業大学の学生団体ALG（AI Love GPU）の活動目的、活動実績、今後の計画と運営体制を紹介します。"
 >
-  <div class="container page-content">
+  <div class="container page-shell">
     <PageHeading
       eyebrow="ABOUT AI LOVE GPU"
       title="好奇心で、つながる。"
       description="AIを学び、作り、動かす。計算資源と知識を共有する、芝浦工業大学の学生団体です。"
     />
-    <div class="prose narrow">
+    <div class="prose max-w-[800px]">
       <h2 id="our-purpose">計算資源と知識を、学生の手で共有する</h2>
       <p>
         ALG（AI Love
@@ -105,13 +106,13 @@ const hasLumin = (await publishedProjects()).some(
       </ul>
       <p>掲載内容は2026年10月の活動計画書に基づきます。</p>
     </div>
-    <div class="hero-buttons" style="margin-top: 35px">
-      <a href="/join/" class="button button-primary">
+    <div class="mt-[35px] flex flex-wrap gap-3">
+      <ButtonLink href="/join/">
         入部案内を見る <Icon name="arrow" size={18} />
-      </a>
-      <a href="/projects/" class="button button-secondary">
+      </ButtonLink>
+      <ButtonLink href="/projects/" variant="secondary">
         プロジェクトを見る <Icon name="arrow" size={18} />
-      </a>
+      </ButtonLink>
     </div>
   </div>
 </Base>

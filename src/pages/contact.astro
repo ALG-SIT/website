@@ -7,13 +7,13 @@ const hasContact = site.contactEmail || site.social.length;
 ---
 
 <Base title="連絡先・SNS" description="ALGの公式連絡先・SNSのご案内。">
-  <div class="container page-content">
+  <div class="container page-shell">
     <PageHeading
       eyebrow="LET'S CONNECT"
       title="ここから、つながろう。"
       description="活動に関するお問い合わせや、最新の情報はこちらから。"
     />
-    <div class="narrow">
+    <div class="max-w-[800px]">
       {!hasContact && (
         <div class="info-panel">
           <h2>入部・見学の窓口を準備しています</h2>
@@ -22,27 +22,31 @@ const hasContact = site.contactEmail || site.social.length;
           </p>
         </div>
       )}
-      <div class="contact-links">
+      <div class="mt-[30px] grid gap-[15px]">
         {site.github && (
           <a class="contact-link" href={site.github}>
-            <strong>GitHub</strong>
-            <span>ソースコード・公開プロジェクト ↗</span>
+            <strong class="text-[15px]">GitHub</strong>
+            <span class="text-xs text-[var(--muted)]">
+              ソースコード・公開プロジェクト ↗
+            </span>
           </a>
         )}
         {site.contactEmail && (
           <a class="contact-link" href={`mailto:${site.contactEmail}`}>
-            <strong>メール</strong>
-            <span>{site.contactEmail} ↗</span>
+            <strong class="text-[15px]">メール</strong>
+            <span class="text-xs text-[var(--muted)]">
+              {site.contactEmail} ↗
+            </span>
           </a>
         )}
         {site.social.map((social) => (
           <a class="contact-link" href={social.url}>
-            <strong>{social.label}</strong>
-            <span>公式アカウント ↗</span>
+            <strong class="text-[15px]">{social.label}</strong>
+            <span class="text-xs text-[var(--muted)]">公式アカウント ↗</span>
           </a>
         ))}
       </div>
-      <div class="prose" style="margin-top: 35px">
+      <div class="prose mt-[35px]">
         <h2>入部・見学をお考えの方へ</h2>
         <p>
           参加条件や募集状況は<a href="/join/">入部案内</a>でご確認ください。
@@ -54,3 +58,20 @@ const hasContact = site.contactEmail || site.social.length;
     </div>
   </div>
 </Base>
+
+<style>
+.contact-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.contact-link:hover {
+  border-color: var(--accent);
+}
+</style>

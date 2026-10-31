@@ -13,38 +13,128 @@ const posts = await publishedBlog();
   title="記事"
   description="ALGの技術記事、活動報告、お知らせ。試したこと、学んだことを共有します。"
 >
-  <div class="container page-content">
+  <div class="container page-shell">
     <PageHeading
       eyebrow="NOTES & STORIES"
       title="試したこと、学んだこと。"
       description="技術のこと、日々の活動のこと。ALGの学びと挑戦の記録。"
     />
-    <div class="listing-toolbar">
-      <fieldset class="filter-controls" aria-label="カテゴリーで絞り込む">
-        <button type="button" data-filter="all" aria-pressed="true">
+    <div class="filter-toolbar">
+      <fieldset
+        class="filter-controls"
+        id="category-filter-controls"
+        aria-label="カテゴリーで絞り込む"
+      >
+        <button
+          class="filter-button"
+          type="button"
+          data-filter="all"
+          aria-pressed="true"
+        >
           すべて
         </button>
         {Object.entries(categories).map(([id, label]) => (
-          <button type="button" data-filter={id} aria-pressed="false">
+          <button
+            class="filter-button"
+            type="button"
+            data-filter={id}
+            aria-pressed="false"
+          >
             {label}
           </button>
         ))}
       </fieldset>
-      <button
-        type="button"
-        class="button button-secondary search-trigger"
-        data-search-open
-      >
+      <button type="button" class="search-trigger" data-search-open>
         <Icon name="search" size={17} />
         記事を検索
       </button>
     </div>
-    <p id="filter-count" class="result-count" role="status">
+    <p id="filter-count" class="my-5 text-xs text-[var(--muted)]" role="status">
       {posts.length}件の記事
     </p>
-    <div class="post-grid">
+    <div
+      class="grid grid-cols-3 gap-6 max-[1023px]:gap-[15px] max-[767px]:grid-cols-1 max-[767px]:gap-5"
+    >
       {posts.map((post, index) => <PostCard post={post} index={index} />)}
-      {!posts.length && <p class="empty-state">記事を準備しています。</p>}
+      {!posts.length && (
+        <p class="col-span-full border border-dashed border-[var(--line)] p-10 text-center text-[var(--muted)]">
+          記事を準備しています。
+        </p>
+      )}
     </div>
   </div>
 </Base>
+
+<style>
+.filter-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.filter-button {
+  min-height: 40px;
+  padding: 7px 15px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.filter-button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--surface);
+  color: var(--accent);
+}
+
+.search-trigger {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 12px 21px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    border-color 150ms,
+    background 150ms;
+}
+
+.search-trigger:hover {
+  border-color: var(--accent);
+}
+
+@media (max-width: 767px) {
+  .filter-toolbar {
+    gap: 15px;
+  }
+
+  .filter-controls {
+    gap: 4px;
+  }
+
+  .filter-button {
+    padding-inline: 10px;
+    font-size: 11px;
+  }
+}
+</style>
