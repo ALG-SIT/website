@@ -18,7 +18,7 @@ export const defaultSocialImage: SocialImage = {
   width: 1200,
   height: 630,
   type: 'image/png',
-  alt: 'Ai Love GPU（ALG）— 好奇心を、動かそう。',
+  alt: 'AI Love GPU（ALG）— 好奇心を、動かそう。',
 };
 
 export const organizationId = new URL('/#organization', site.url).href;
