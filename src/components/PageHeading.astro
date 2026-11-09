@@ -1,4 +1,6 @@
 ---
+import Eyebrow from './Eyebrow.astro';
+
 interface Props {
   eyebrow: string;
   title: string;
@@ -7,12 +9,15 @@ interface Props {
 const { eyebrow, title, description } = Astro.props;
 ---
 
-<div class="page-heading">
-  <p class="eyebrow">
-    <span></span>
-    {eyebrow}
-  </p>
-  <h1>{title}</h1>
-  {description && <p class="page-description">{description}</p>}
+<div class="mb-[45px] max-[767px]:mb-[30px]">
+  <Eyebrow dot>{eyebrow}</Eyebrow>
+  <h1 class="mb-5 text-[clamp(2rem,4.1vw,3rem)] max-[767px]:text-[30px]">
+    {title}
+  </h1>
+  {description && (
+    <p class="mb-0 max-w-[700px] text-[15px] leading-[2] text-[var(--muted)] max-[767px]:text-[13px]">
+      {description}
+    </p>
+  )}
   <slot />
 </div>

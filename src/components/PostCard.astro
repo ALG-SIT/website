@@ -25,7 +25,7 @@ const authors = await resolveAuthors(post.data.authors);
       <ContentImage src={post.data.cover} alt="" kind="post-card" />
     ) : (
       <>
-        <span class="visual-index" aria-hidden="true">
+        <span class="visual-label visual-label-top" aria-hidden="true">
           ALG / NOTES_{String(index + 1).padStart(2, '0')}
         </span>
         <Icon
@@ -38,7 +38,7 @@ const authors = await resolveAuthors(post.data.authors);
           }
           size={72}
         />
-        <span class="visual-label" aria-hidden="true">
+        <span class="visual-label visual-label-bottom" aria-hidden="true">
           {post.data.category === 'tech'
             ? 'EXPERIMENT. LEARN. REPEAT.'
             : post.data.category === 'activity'
@@ -48,28 +48,33 @@ const authors = await resolveAuthors(post.data.authors);
       </>
     )}
   </a>
-  <div class="card-body">
-    <div class="card-meta">
-      <span class="category-label">{categories[post.data.category]}</span>
-      <time datetime={post.data.publishedAt.toISOString()}>
+  <div class="post-card-content">
+    <div class="post-card-meta-top">
+      <span class="post-card-category">{categories[post.data.category]}</span>
+      <time
+        class="post-card-date"
+        datetime={post.data.publishedAt.toISOString()}
+      >
         {formatDate(post.data.publishedAt)}
       </time>
     </div>
-    <h3>
+    <h3 class="post-card-title">
       <a href={`/blog/${post.id}/`}>
         {post.data.title}
-        <span class="card-arrow">
+        <span class="post-card-arrow">
           <Icon name="arrow" size={18} />
         </span>
       </a>
     </h3>
-    <p>{post.data.description}</p>
-    <div class="card-bottom">
-      <span class="author-mini">
-        <span class="avatar-mini">A</span>
+    <p class="post-card-description">
+      {post.data.description}
+    </p>
+    <div class="post-card-footer">
+      <span class="post-card-authors">
+        <span class="post-card-author-mark">A</span>
         {authors.map((author) => author.data.displayName).join('・')}
       </span>
-      <div class="tag-list">
+      <div class="post-card-tags">
         {post.data.tags
           .slice(0, 2)
           .map((id) => (
@@ -79,3 +84,202 @@ const authors = await resolveAuthors(post.data.authors);
     </div>
   </div>
 </article>
+
+<style>
+.post-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  transition: border-color 150ms;
+}
+
+.post-card:hover,
+.post-card:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
+}
+
+.card-visual {
+  position: relative;
+  display: flex;
+  aspect-ratio: 1.82;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--accent);
+  background-color: var(--chip-bg);
+  background-image:
+    radial-gradient(circle at 50% 50%, transparent, var(--surface)),
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:
+    auto,
+    22px 22px,
+    22px 22px;
+}
+
+.visual-activity {
+  background-color: color-mix(in srgb, var(--brand-pink) 15%, var(--surface));
+}
+
+.visual-news {
+  background-color: color-mix(in srgb, var(--brand-green) 13%, var(--surface));
+}
+
+.card-visual :global(img) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-visual :global(svg) {
+  opacity: 0.8;
+}
+
+.visual-label {
+  position: absolute;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+.visual-label-top {
+  top: 17px;
+  left: 18px;
+}
+
+.visual-label-bottom {
+  right: 17px;
+  bottom: 15px;
+}
+
+.post-card-content {
+  padding: 23px 22px;
+}
+
+.post-card-meta-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 13px;
+}
+
+.post-card-category {
+  display: inline-flex;
+  padding: 3px 9px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  color: var(--accent);
+  font-size: 10px;
+}
+
+.post-card-date {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.post-card-title {
+  margin-bottom: 12px;
+  font-size: 16px;
+  line-height: 1.75;
+  letter-spacing: -0.02em;
+}
+
+.post-card-title a {
+  display: block;
+}
+
+.post-card-arrow {
+  float: right;
+  margin: 5px 0 0 7px;
+  color: var(--muted);
+}
+
+.post-card-description {
+  margin-bottom: 22px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.post-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.post-card-authors {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.post-card-author-mark {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.post-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.post-card-tags a:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 1023px) {
+  .post-card-content {
+    padding: 20px 17px;
+  }
+}
+
+@media (max-width: 767px) {
+  .card-visual {
+    aspect-ratio: 1.9;
+  }
+
+  .post-card-content {
+    padding: 23px;
+  }
+
+  .post-card-category,
+  .post-card-date {
+    font-size: 11px;
+  }
+
+  .post-card-title {
+    font-size: 18px;
+  }
+
+  .post-card-description {
+    font-size: 13px;
+  }
+
+  .post-card-authors,
+  .post-card-tags {
+    font-size: 10px;
+  }
+}
+</style>

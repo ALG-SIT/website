@@ -20,15 +20,22 @@ const { label, posts } = Astro.props;
 ---
 
 <Base title={`${label}の記事`} description={`${label}に関するALGの記事一覧。`}>
-  <div class="container page-content">
+  <div class="container page-shell">
     <PageHeading
       eyebrow="EXPLORE BY TAG"
       title={`#${label}`}
       description={`${posts.length}件の記事`}
     />
-    <div class="post-grid">
+    <div
+      class="grid grid-cols-3 gap-6 max-[1023px]:gap-[15px] max-[767px]:grid-cols-1 max-[767px]:gap-5"
+    >
       {posts.map((post, index) => <PostCard post={post} index={index} />)}
     </div>
-    <a href="/blog/" class="back-link"> ← すべての記事へ </a>
+    <a
+      href="/blog/"
+      class="back-link mt-10 inline-block text-[13px] text-[var(--accent)]"
+    >
+      ← すべての記事へ
+    </a>
   </div>
 </Base>

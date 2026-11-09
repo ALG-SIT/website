@@ -8,3 +8,22 @@ interface Props {
   <strong>{Astro.props.title}</strong>
   <slot />
 </aside>
+
+<style>
+.article-callout {
+  padding: 23px 28px;
+  margin-block: 25px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 5px;
+  background: var(--surface);
+}
+
+.article-callout strong {
+  color: var(--accent);
+}
+
+.article-callout :global(p:last-child) {
+  margin-bottom: 0;
+}
+</style>

@@ -10,7 +10,7 @@ export default defineConfig({
   site: site.url,
   output: 'static',
   trailingSlash: 'always',
-  build: { inlineStylesheets: 'always' },
+  build: { inlineStylesheets: 'auto' },
   fonts: [
     {
       provider: fontProviders.local(),

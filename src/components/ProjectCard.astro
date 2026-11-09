@@ -14,7 +14,7 @@ const { project, index = 0 } = Astro.props;
 <article class="project-card">
   <a
     href={`/projects/${project.id}/`}
-    class="project-visual"
+    class="project-card-visual"
     tabindex="-1"
     aria-label={project.data.title}
   >
@@ -22,7 +22,7 @@ const { project, index = 0 } = Astro.props;
       <ContentImage src={project.data.cover} alt="" kind="project-card" />
     ) : (
       <>
-        <span class="visual-index" aria-hidden="true">
+        <span class="project-card-label" aria-hidden="true">
           PROJECT / {String(index + 1).padStart(2, '0')}
         </span>
         <div class="terminal-art" aria-hidden="true">
@@ -42,20 +42,196 @@ const { project, index = 0 } = Astro.props;
       </>
     )}
   </a>
-  <div class="card-body">
-    <div class="project-status">
-      <span class="status-dot"></span>
+  <div class="project-card-content">
+    <div class="project-card-status">
+      <span aria-hidden="true"></span>
       {statuses[project.data.status]}
     </div>
-    <h3>
-      <a href={`/projects/${project.id}/`}>
+    <h3 class="project-card-title">
+      <a class="project-card-title-link" href={`/projects/${project.id}/`}>
         {project.data.title}
-        <Icon name="arrow" size={20} />
+        <Icon name="arrow" size={20} class="text-[var(--muted)]" />
       </a>
     </h3>
-    <p>{project.data.description}</p>
-    <div class="tech-list">
+    <p class="project-card-description">
+      {project.data.description}
+    </p>
+    <div class="project-card-technologies">
       {project.data.technologies.map((tech) => <span>{tech}</span>)}
     </div>
   </div>
 </article>
+
+<style>
+.project-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  transition: border-color 150ms;
+}
+
+.project-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
+}
+
+.project-card-visual {
+  position: relative;
+  display: flex;
+  height: 230px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background-color: var(--surface-soft);
+  background-image: radial-gradient(
+    ellipse at bottom,
+    color-mix(in srgb, var(--accent) 7%, transparent),
+    transparent 70%
+  );
+}
+
+.project-card-visual :global(img) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-card-label {
+  position: absolute;
+  top: 17px;
+  left: 18px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+.project-card-content {
+  padding: 23px 22px;
+}
+
+.project-card-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  color: var(--accent);
+  font-size: 10px;
+}
+
+.project-card-status span {
+  width: 4px;
+  height: 4px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+.project-card-title {
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.project-card-title-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.project-card-description {
+  margin-bottom: 22px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.project-card-technologies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.project-card-technologies span {
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.project-card :global(.terminal-art) {
+  width: 73%;
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 6px 6px 0 0;
+  background: var(--bg);
+  transform: perspective(600px) rotateX(3deg) rotateY(-5deg);
+  box-shadow: 10px 20px 40px #00000013;
+}
+
+.project-card :global(.terminal-art > span) {
+  display: flex;
+  gap: 5px;
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.project-card :global(.terminal-art i) {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+  opacity: 0.5;
+}
+
+.project-card :global(.terminal-art code) {
+  display: block;
+  padding: 23px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 2.2;
+}
+
+.project-card :global(.terminal-art b),
+.project-card :global(.terminal-cursor) {
+  color: var(--accent);
+}
+
+.project-card :global(.terminal-muted) {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+@media (max-width: 1023px) {
+  .project-card-content {
+    padding: 20px 17px;
+  }
+}
+
+@media (max-width: 767px) {
+  .project-card-visual {
+    height: 215px;
+  }
+
+  .project-card-content {
+    padding: 23px;
+  }
+
+  .project-card-description {
+    font-size: 13px;
+  }
+
+  .project-card :global(.terminal-art) {
+    width: 80%;
+  }
+
+  .project-card :global(.terminal-art code) {
+    font-size: 11px;
+  }
+}
+</style>
